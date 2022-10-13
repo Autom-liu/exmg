@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exmg.core.mapper.QuestionInfoMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.QuestionInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="question" jdbcType="VARCHAR" property="question" />
+    <result column="question_type" jdbcType="INTEGER" property="questionType" />
+    <result column="difficulty" jdbcType="INTEGER" property="difficulty" />
+    <result column="top_category" jdbcType="INTEGER" property="topCategory" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="interpretation" jdbcType="VARCHAR" property="interpretation" />
+    <result column="pics_url" jdbcType="VARCHAR" property="picsUrl" />
+    <result column="common" jdbcType="BIT" property="common" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `user_id`, `nick_name`, `question`, `question_type`, `difficulty`, `top_category`, 
+    `category_id`, `interpretation`, `pics_url`, `common`, `create_time`, `update_time`, 
+    `status`, `version`
+  </sql>
+  <select id="selectByExample" parameterType="com.edu.exmg.core.bean.QuestionInfoExample" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from question_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.edu.exmg.core.bean.QuestionInfoExample">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    delete from question_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <select id="countByExample" parameterType="com.edu.exmg.core.bean.QuestionInfoExample" resultType="java.lang.Long">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select count(*) from question_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update question_info
+    <set>
+      <if test="record.id != null">
+        `id` = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        `user_id` = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nickName != null">
+        `nick_name` = #{record.nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.question != null">
+        `question` = #{record.question,jdbcType=VARCHAR},
+      </if>
+      <if test="record.questionType != null">
+        `question_type` = #{record.questionType,jdbcType=INTEGER},
+      </if>
+      <if test="record.difficulty != null">
+        `difficulty` = #{record.difficulty,jdbcType=INTEGER},
+      </if>
+      <if test="record.topCategory != null">
+        `top_category` = #{record.topCategory,jdbcType=INTEGER},
+      </if>
+      <if test="record.categoryId != null">
+        `category_id` = #{record.categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="record.interpretation != null">
+        `interpretation` = #{record.interpretation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.picsUrl != null">
+        `pics_url` = #{record.picsUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.common != null">
+        `common` = #{record.common,jdbcType=BIT},
+      </if>
+      <if test="record.createTime != null">
+        `create_time` = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        `update_time` = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.version != null">
+        `version` = #{record.version,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update question_info
+    set `id` = #{record.id,jdbcType=INTEGER},
+      `user_id` = #{record.userId,jdbcType=VARCHAR},
+      `nick_name` = #{record.nickName,jdbcType=VARCHAR},
+      `question` = #{record.question,jdbcType=VARCHAR},
+      `question_type` = #{record.questionType,jdbcType=INTEGER},
+      `difficulty` = #{record.difficulty,jdbcType=INTEGER},
+      `top_category` = #{record.topCategory,jdbcType=INTEGER},
+      `category_id` = #{record.categoryId,jdbcType=INTEGER},
+      `interpretation` = #{record.interpretation,jdbcType=VARCHAR},
+      `pics_url` = #{record.picsUrl,jdbcType=VARCHAR},
+      `common` = #{record.common,jdbcType=BIT},
+      `create_time` = #{record.createTime,jdbcType=TIMESTAMP},
+      `update_time` = #{record.updateTime,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=TINYINT},
+      `version` = #{record.version,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

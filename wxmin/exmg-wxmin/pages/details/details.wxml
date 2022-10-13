@@ -1,0 +1,25 @@
+<view class="page" data-weui-theme="{{theme}}">
+	<view class="page__hd">
+		<view class="page__title centertxt">资产评分明细</view>
+		<view class="page__desc centertxt">{{companyId}}</view>
+	</view>
+    <button class="weui-btn" type="primary" bind:tap="returnBack">返回</button>
+	<view class="page__bd page__bd_spacing">
+    <block wx:for-items="{{detailData}}" wx:key="{{item.projectTarget.id}}">
+      <view class="block toppad64">
+        <view class="weui-flex">
+          <view class="weui-flex__item">
+            <view class="placeholder centertxt">{{item.projectTarget.targetName}}</view>
+          </view>
+        </view>
+        <block wx:for-items="{{item.table}}" wx:for-item="subitem" wx:key="{{item.serno}}">
+          <view class="weui-flex">
+            <view class="rightpad"><view class="placeholder">{{subitem.serno}}</view></view>
+            <view class="weui-flex__item"><view class="placeholder">{{subitem.value}}</view></view>
+            <view class="leftpad"><view class="placeholder">{{subitem.score}}</view></view>
+          </view>
+        </block>
+      </view>
+    </block>
+	</view>
+</view>

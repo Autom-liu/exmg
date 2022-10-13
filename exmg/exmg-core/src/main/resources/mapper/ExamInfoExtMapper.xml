@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exmg.core.mapper.ExamInfoExtMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.ExamInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="exam_name" jdbcType="VARCHAR" property="examName" />
+    <result column="exam_remark" jdbcType="VARCHAR" property="examRemark" />
+    <result column="user_from" jdbcType="INTEGER" property="userFrom" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="total_score" jdbcType="INTEGER" property="totalScore" />
+    <result column="answer_mode" jdbcType="INTEGER" property="answerMode" />
+    <result column="max_count" jdbcType="INTEGER" property="maxCount" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+    <result column="banner" jdbcType="BIT" property="banner" />
+    <result column="auto_generate" jdbcType="BIT" property="autoGenerate" />
+    <result column="beginTime" jdbcType="TIMESTAMP" property="begintime" />
+    <result column="endTime" jdbcType="TIMESTAMP" property="endtime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+
+  <select id="selectUserExamList" resultMap="BaseResultMap">
+    select id, exam_name, exam_remark, user_from, user_id, total_score, answer_mode, max_count, pic_url, banner, auto_generate, beginTime, endTime, create_time, update_time, status, version from exam_info
+    where id in (select distinct(exam_id) from user_answer where user_id = #{userId})
+  </select>
+
+</mapper>

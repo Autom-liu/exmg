@@ -1,0 +1,9 @@
+server:
+  port: 9080
+  servlet:
+    context-path: /exmg/admin
+spring:
+  application:
+    name: exmg-admin
+  profiles:
+    active: dev

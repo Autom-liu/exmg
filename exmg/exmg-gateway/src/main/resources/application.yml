@@ -1,0 +1,14 @@
+server:
+  port: 9082
+  servlet:
+    context-path: /api/exmg
+spring:
+  application:
+    name: exmg
+  profiles:
+    active: dev
+
+files:
+  upload:
+    absolutePath: /home/autom/project/exmg/wxmin/exmg-mpvue/static/images
+    relativePath: /static/images

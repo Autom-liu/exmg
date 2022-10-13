@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exmg.core.mapper.ExamInfoMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.ExamInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="exam_name" jdbcType="VARCHAR" property="examName" />
+    <result column="exam_remark" jdbcType="VARCHAR" property="examRemark" />
+    <result column="user_from" jdbcType="INTEGER" property="userFrom" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="total_score" jdbcType="INTEGER" property="totalScore" />
+    <result column="answer_mode" jdbcType="INTEGER" property="answerMode" />
+    <result column="max_count" jdbcType="INTEGER" property="maxCount" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+    <result column="banner" jdbcType="BIT" property="banner" />
+    <result column="auto_generate" jdbcType="BIT" property="autoGenerate" />
+    <result column="beginTime" jdbcType="TIMESTAMP" property="begintime" />
+    <result column="endTime" jdbcType="TIMESTAMP" property="endtime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `exam_name`, `exam_remark`, `user_from`, `user_id`, `total_score`, `answer_mode`, 
+    `max_count`, `pic_url`, `banner`, `auto_generate`, `beginTime`, `endTime`, `create_time`, 
+    `update_time`, `status`, `version`
+  </sql>
+  <select id="selectByExample" parameterType="com.edu.exmg.core.bean.ExamInfoExample" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from exam_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.edu.exmg.core.bean.ExamInfoExample">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    delete from exam_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <select id="countByExample" parameterType="com.edu.exmg.core.bean.ExamInfoExample" resultType="java.lang.Long">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select count(*) from exam_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update exam_info
+    <set>
+      <if test="record.id != null">
+        `id` = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.examName != null">
+        `exam_name` = #{record.examName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.examRemark != null">
+        `exam_remark` = #{record.examRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userFrom != null">
+        `user_from` = #{record.userFrom,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        `user_id` = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.totalScore != null">
+        `total_score` = #{record.totalScore,jdbcType=INTEGER},
+      </if>
+      <if test="record.answerMode != null">
+        `answer_mode` = #{record.answerMode,jdbcType=INTEGER},
+      </if>
+      <if test="record.maxCount != null">
+        `max_count` = #{record.maxCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.picUrl != null">
+        `pic_url` = #{record.picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.banner != null">
+        `banner` = #{record.banner,jdbcType=BIT},
+      </if>
+      <if test="record.autoGenerate != null">
+        `auto_generate` = #{record.autoGenerate,jdbcType=BIT},
+      </if>
+      <if test="record.begintime != null">
+        `beginTime` = #{record.begintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endtime != null">
+        `endTime` = #{record.endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createTime != null">
+        `create_time` = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        `update_time` = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=BIT},
+      </if>
+      <if test="record.version != null">
+        `version` = #{record.version,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update exam_info
+    set `id` = #{record.id,jdbcType=INTEGER},
+      `exam_name` = #{record.examName,jdbcType=VARCHAR},
+      `exam_remark` = #{record.examRemark,jdbcType=VARCHAR},
+      `user_from` = #{record.userFrom,jdbcType=INTEGER},
+      `user_id` = #{record.userId,jdbcType=VARCHAR},
+      `total_score` = #{record.totalScore,jdbcType=INTEGER},
+      `answer_mode` = #{record.answerMode,jdbcType=INTEGER},
+      `max_count` = #{record.maxCount,jdbcType=INTEGER},
+      `pic_url` = #{record.picUrl,jdbcType=VARCHAR},
+      `banner` = #{record.banner,jdbcType=BIT},
+      `auto_generate` = #{record.autoGenerate,jdbcType=BIT},
+      `beginTime` = #{record.begintime,jdbcType=TIMESTAMP},
+      `endTime` = #{record.endtime,jdbcType=TIMESTAMP},
+      `create_time` = #{record.createTime,jdbcType=TIMESTAMP},
+      `update_time` = #{record.updateTime,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=BIT},
+      `version` = #{record.version,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

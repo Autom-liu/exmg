@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/index/main",
+    "pages/user/main",
+    "pages/adminInfo/main",
+    "pages/prepareEnter/main",
+    "pages/startExam/main",
+    "pages/endExam/main",
+    "pages/userAnswerList/main",
+    "pages/userAnswerDetail/main"
+    
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Apricity EXMG",
+    "navigationBarTextStyle": "black"
+  },
+  "usingComponents": {
+    "van-button": "@vant/weapp/dist/button/index",
+    "van-row": "@vant/weapp/dist/row/index",
+    "van-col": "@vant/weapp/dist/col/index",
+    "van-card": "@vant/weapp/dist/card/index",
+    "van-icon": "@vant/weapp/dist/icon/index",
+    "van-toast": "@vant/weapp/dist/toast/index",
+    "van-cell": "@vant/weapp/dist/cell/index",
+    "van-field": "@vant/weapp/dist/field/index",
+    "van-calendar": "@vant/weapp/dist/calendar/index",
+    "van-checkbox": "@vant/weapp/dist/checkbox/index",
+    "van-picker": "@vant/weapp/dist/picker/index",
+    "van-radio": "@vant/weapp/dist/radio/index",
+    "van-switch": "@vant/weapp/dist/switch/index",
+    "van-uploader": "@vant/weapp/dist/uploader/index",
+    "van-radio-group": "@vant/weapp/dist/radio-group/index",
+    "van-checkbox-group": "@vant/weapp/dist/checkbox-group/index",
+    "van-cell-group": "@vant/weapp/dist/cell-group/index",
+    "van-tab": "@vant/weapp/dist/tab/index",
+    "van-tabs": "@vant/weapp/dist/tabs/index",
+    "van-rate": "@vant/weapp/dist/rate/index",
+    "van-popup": "@vant/weapp/dist/popup/index",
+    "van-image": "@vant/weapp/dist/image/index",
+    "van-tree-select": "@vant/weapp/dist/tree-select/index",
+    "van-collapse": "@vant/weapp/dist/collapse/index",
+    "van-collapse-item": "@vant/weapp/dist/collapse-item/index",
+    "van-action-sheet": "@vant/weapp/dist/action-sheet/index",
+    "van-tabbar": "@vant/weapp/dist/tabbar/index",
+    "van-tabbar-item": "@vant/weapp/dist/tabbar-item/index",
+    "van-circle": "@vant/weapp/dist/circle/index",
+    "van-progress": "@vant/weapp/dist/progress/index",
+    "van-dialog": "@vant/weapp/dist/dialog/index"
+  }
+}

@@ -1,0 +1,18 @@
+<!--pages/scores/scores.wxml-->
+<view class="page-body">
+  <view wx:if="{{showResult}}">
+      <view class="title">代码为: {{companyId}}</view>
+      <view class="title">综合评分</view>
+      <view class="scoretxt">{{totalScore}}</view>
+      <button class="weui-btn" type="primary" bind:tap="onShowDetails">查看详情</button>
+      <button class="weui-btn" type="primary" bind:tap="returnBack">返回首页</button>
+  </view>
+  <view wx:if="{{!showResult}}" class="loader-wrapping">
+    <view class="loader-box">
+      <view class="loader"></view>
+    </view>
+    
+    <button class="weui-btn" type="primary" bind:tap="returnBack">返回首页</button>
+  </view>
+
+</view>

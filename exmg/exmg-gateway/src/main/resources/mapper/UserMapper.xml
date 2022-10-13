@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exmg.gateway.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.gateway.bean.User">
+    <id column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="office_phone" jdbcType="VARCHAR" property="officePhone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="wx_openid" jdbcType="VARCHAR" property="wxopenid" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+
+  <select id="selectByOpenid" resultMap="BaseResultMap">
+    select `user_id`, `user_name`, `password`, `wx_openid`, `nick_name` from exmg_user
+    where wx_openid = #{wxopenid} limit 1
+  </select>
+
+
+</mapper>

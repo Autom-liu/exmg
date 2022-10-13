@@ -1,0 +1,11 @@
+<view class="page-body">
+  <view class="page-section">
+    <view class="weui-cells__title">请输入A股代码</view>
+    <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+        <input class="weui-input" focus placeholder="上交所请用SH开头，深交所请用SZ开头" bindinput="setInputValue"/>
+      </view>
+    </view>
+  </view>
+  <button class="weui-btn" type="primary" bind:tap="onTap">查询</button>
+</view>

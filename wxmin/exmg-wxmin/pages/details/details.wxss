@@ -1,0 +1,20 @@
+/* pages/details/details.wxss */
+.rightpad {
+  padding-right: 32rpx;
+}
+
+.leftpad {
+  padding-left: 32rpx;
+}
+
+.toppad64 {
+  padding-top: 64rpx;
+}
+
+.toppad32 {
+  padding-top: 32rpx;
+}
+
+.centertxt {
+  text-align: center;
+}
