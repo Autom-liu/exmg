@@ -19,7 +19,7 @@
 
   <insert id="insertNextSort">
     insert into exam_question (exam_id,question_id,score,`sorted`)
-    SELECT #{examId},#{questionId},#{score}, IFNULL(max(sorted)+1,1) from exam_question where exam_id=1
+    SELECT #{examId},#{questionId},#{score}, IFNULL(max(sorted)+1,1) from exam_question where exam_id=#{examId}
   </insert>
 
 

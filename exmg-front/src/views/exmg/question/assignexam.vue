@@ -118,8 +118,12 @@ export default {
       this.submit()
     },
     submit() {
-      console.log({...this.form})
-      resignExamQuestion({...this.form})
+      resignExamQuestion({...this.form}).then((response) => {
+        console.log(response)
+        if (response.code = '0000') {
+          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() });
+        }
+      })
     }
   }
 

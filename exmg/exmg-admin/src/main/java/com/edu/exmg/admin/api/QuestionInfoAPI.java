@@ -8,6 +8,7 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteTable;
 import com.edu.exmg.admin.bean.User;
 import com.edu.exmg.admin.config.CurrentUser;
+import com.edu.exmg.admin.dto.ExamQuestionAssignDTO;
 import com.edu.exmg.admin.enums.ErrorEnum;
 import com.edu.exmg.admin.vo.ExportCategory;
 import com.edu.exmg.admin.vo.ImportQuestion;
@@ -125,8 +126,11 @@ public class QuestionInfoAPI {
     }
 
     @PostMapping("question/exam/assign")
-    public IResult assignExam(@RequestBody ExamQuestionDTO attrs, List<Integer> questionIds) throws BizException {
-        if (attrs.getExamId() == null || attrs.getSorted() == null || attrs.getScore() == null) {
+    public IResult assignExam(@RequestBody ExamQuestionAssignDTO dto) throws BizException {
+        ExamQuestionDTO attrs = dto.getAttrs();
+        List<Integer> questionIds = dto.getQuestionIds();
+
+        if (attrs == null || attrs.getExamId() == null || attrs.getSorted() == null || attrs.getScore() == null) {
             return IResult.error(ErrorEnum.ERRCODE_0403);
         }
         if (StringUtils.isBlank(attrs.getOp())) {

@@ -23,6 +23,11 @@
             <el-tag v-else type="info" disable-transitions>否</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button :class="['btn-col']" size="small" type="danger" icon="delete" @click="() => onRemove(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination layout="prev, pager, next" :page-count="pageInfo.totalPage" @current-change="onPageChange" />
     </el-main>
@@ -30,7 +35,7 @@
 </template>
 
 <script>
-import { queryQuestionExam } from '@/api/question'
+import { queryQuestionExam, resignExamQuestion } from '@/api/question'
 
 export default {
   name: 'ExamQuestion',
@@ -86,6 +91,26 @@ export default {
     onPageChange(p) {
       this.query.currentPage = p
       this.initData()
+    },
+    onRemove(row) {
+      const form = {
+        attrs: {
+          op: 'D',
+          examId: this.examInfo.id,
+          score: 0,
+          sorted: -1
+        },
+        questionIds: [row.questionId]
+      }
+      resignExamQuestion({...form}).then((response) => {
+        if (response.code = '0000') {
+          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() });
+        }
+      })
+    },
+    returnBackPage() {
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace({ name: 'ExamList' })
     }
   }
 }

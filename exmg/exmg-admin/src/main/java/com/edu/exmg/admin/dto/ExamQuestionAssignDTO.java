@@ -8,9 +8,9 @@ import java.util.List;
 @Data
 public class ExamQuestionAssignDTO {
 
-    private Integer examId;
+    private ExamQuestionDTO attrs;
 
-    List<ExamQuestionDTO> exqtList;
+    private List<Integer> questionIds;
 
 
 }
