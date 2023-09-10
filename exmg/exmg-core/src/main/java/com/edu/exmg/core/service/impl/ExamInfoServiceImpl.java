@@ -3,6 +3,7 @@ package com.edu.exmg.core.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.edu.exmg.common.exception.BizException;
 import com.edu.exmg.common.util.ConverterUtils;
 import com.edu.exmg.common.util.DateUtils;
 import com.edu.exmg.core.bean.ExamInfo;
@@ -11,8 +12,10 @@ import com.edu.exmg.core.dto.ExamQuestionDTO;
 import com.edu.exmg.core.mapper.ExamInfoExtMapper;
 import com.edu.exmg.core.mapper.QuestionInfoMapper;
 import com.edu.exmg.core.query.QuestionInfoQuery;
+import com.edu.exmg.core.service.ExamQuestionService;
 import com.edu.exmg.core.service.QuestionInfoService;
 import com.edu.exmg.core.vo.ExamQuestionVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edu.exmg.common.service.CommonService;
@@ -32,6 +35,9 @@ public class ExamInfoServiceImpl extends CommonService<ExamInfo, ExamInfoDTO, Ex
 
 	private QuestionInfoService questionInfoService;
 
+	@Autowired
+	private ExamQuestionService examQuestionService;
+
 	private ExamInfoExtMapper examInfoExtMapper;
 
 	public ExamInfoServiceImpl(ExamInfoMapper examInfoMapper, QuestionInfoService questionInfoService, ExamInfoExtMapper examInfoExtMapper) {
@@ -43,7 +49,7 @@ public class ExamInfoServiceImpl extends CommonService<ExamInfo, ExamInfoDTO, Ex
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ExamInfoVO userRandomExam(QuestionInfoQuery query) {
+	public ExamInfoVO userRandomExam(QuestionInfoQuery query) throws BizException {
 		// 创建考试
 		String userId = query.getUserId();
 		ExamInfo examInfo = createExamInfo(userId);
@@ -56,9 +62,11 @@ public class ExamInfoServiceImpl extends CommonService<ExamInfo, ExamInfoDTO, Ex
 		List<ExamQuestionDTO> examQuestions = ConverterUtils.copyList(randomQuestions, ExamQuestionDTO.class);
 		for (ExamQuestionDTO examQuestion : examQuestions) {
 			examQuestion.setExamId(examInfo.getId());
-			examQuestion.setScore(0);
+			examQuestion.setScore(examInfo.getTotalScore() / examQuestions.size());
+			examQuestionService.insert(examQuestion);
 		}
-		questionInfoService.resignExamQuestion(examInfo.getId(), examQuestions);
+
+
 
 		return result;
 	}

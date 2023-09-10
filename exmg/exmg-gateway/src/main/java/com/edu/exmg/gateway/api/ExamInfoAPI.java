@@ -54,7 +54,7 @@ public class ExamInfoAPI {
      * @return
      */
     @PostMapping("random")
-    public IResult randomExam(@RequestBody QuestionInfoQuery query) {
+    public IResult randomExam(@RequestBody QuestionInfoQuery query) throws BizException {
         if (StringUtils.isBlank(query.getUserId())) {
             return IResult.error(ErrorEnums.ERRCODE_0001, "userId");
         }

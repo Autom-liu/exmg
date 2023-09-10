@@ -1,10 +1,8 @@
 <template>
   <el-container>
     <el-main>
-      <el-button-group>
-        <el-button type="primary" icon="el-icon-plus" @click="toAssign">添加</el-button>
-      </el-button-group>
       <el-table :data="tableData" border highlight-current-row>
+        <el-table-column prop="questionId" label="题目id" width="60" />
         <el-table-column prop="question" label="题目" />
         <el-table-column prop="questionType" label="题目类型" width="80">
           <template slot-scope="scope">
@@ -14,7 +12,11 @@
         <el-table-column prop="score" label="分值" width="80" />
         <el-table-column prop="sorted" label="序号" width="80" />
         <el-table-column prop="difficulty" label="难度" width="80" />
-        <el-table-column prop="categoryId" label="分类" width="80" />
+        <el-table-column prop="categoryId" label="分类" width="80">
+          <template slot-scope="scope">
+            {{ examCategoryEnums[scope.row.categoryId] }}
+          </template>
+        </el-table-column>
         <el-table-column prop="common" label="公共题库" width="80">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.common" type="success" disable-transitions>是</el-tag>
@@ -52,6 +54,11 @@ export default {
         totalPage: 1,
         pageSize: 1000
       }
+    }
+  },
+  computed: {
+    examCategoryEnums() {
+      return this.$store.getters['dataDict/examCategoryEnums']
     }
   },
   created() {

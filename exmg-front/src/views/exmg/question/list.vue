@@ -10,14 +10,15 @@
         </el-form-item>
         <el-form-item>
           <el-button-group>
-            <el-button type="primary" icon="el-icon-plus" @click="toAdd" />
-            <el-button type="primary" icon="el-icon-upload" @click="uploadDialog.onShow" />
+            <el-button type="primary" icon="el-icon-plus" @click="toAdd">添加题目</el-button>
+            <el-button type="primary" icon="el-icon-upload" @click="uploadDialog.onShow">上传题目</el-button>
+            <el-button type="primary" icon="el-icon-upload" @click="toAssign">加入考试</el-button>
           </el-button-group>
         </el-form-item>
       </el-form>
     </el-header>
     <el-container>
-      <question-table :query="query" :refresh="refresh" />
+      <question-table :query="query" :refresh="refresh" @table-click="onQuestionTableClick" />
     </el-container>
     <el-dialog title="上传对话框" :visible.sync="uploadDialog.show">
       <el-link type="primary" :href="`${BASE_URL}/admin/question/template/download`" target="_blank">下载导入模板</el-link>
@@ -47,6 +48,9 @@ export default {
     return {
       query: {
         questionName: ''
+      },
+      qstTable: {
+        selectedRows: []
       },
       BASE_URL: process.env.VUE_APP_BASE_API,
       refresh: false,
@@ -78,8 +82,22 @@ export default {
     toAdd() {
       this.$router.push({ name: 'QuestionAdd' })
     },
+    toAssign() {
+      if (this.qstTable.selectedRows.length < 1) {
+        this.$message({
+          message: '请选择题目操作',
+          type: 'warning'
+        });
+        return;
+      }
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.replace({ name: 'AssignExam', params: { questions: this.qstTable.selectedRows }})
+    },
     initData() {
       this.refresh = !this.refresh
+    },
+    onQuestionTableClick(rows) {
+      this.qstTable.selectedRows = rows
     }
   }
 }

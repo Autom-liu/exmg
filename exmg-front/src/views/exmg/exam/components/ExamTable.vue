@@ -5,50 +5,54 @@
       <el-table-column prop="examName" label="考试名称" />
       <el-table-column prop="examRemark" label="考试说明" />
       <el-table-column prop="totalScore" label="总分" width="80" />
-      <el-table-column prop="answerMode" label="答题模式" width="80" />
+      <el-table-column prop="answerMode" label="答题模式" width="80">
+        <template slot-scope="scope">
+          {{ answerModeEnums[scope.row.answerMode] }}
+        </template>
+      </el-table-column>
       <el-table-column prop="maxCount" label="最大答题次数" width="80" />
-      <el-table-column prop="banner" label="是否展示首页" width="80">
+      <el-table-column prop="banner" label="是否展示首页" width="80" v-if="!simple">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.banner" type="success" disable-transitions>是</el-tag>
           <el-tag v-else type="info" disable-transitions>否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="autoGenerate" label="是否随机生成" width="80">
+      <el-table-column prop="autoGenerate" label="是否随机生成" width="80" v-if="!simple">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.autoGenerate" type="success" disable-transitions>是</el-tag>
           <el-tag v-else type="info" disable-transitions>否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="begintime" label="开始时间" width="180">
+      <el-table-column prop="begintime" label="开始时间" width="180" v-if="!simple">
         <template slot-scope="scope">
           {{ parseTime(scope.row.begintime, '{y}-{m}-{d}') }}
         </template>
       </el-table-column>
-      <el-table-column prop="endtime" label="结束时间" width="180">
+      <el-table-column prop="endtime" label="结束时间" width="180" v-if="!simple">
         <template slot-scope="scope">
           {{ parseTime(scope.row.endtime, '{y}-{m}-{d}') }}
         </template>
       </el-table-column>
-      <el-table-column label="封面缩略图" width="180">
+      <el-table-column label="封面缩略图" width="180" v-if="!simple">
         <template slot-scope="scope">
           <el-button size="small" @click="() => seeShortcut(scope.row)">查看缩略图</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态" width="80">
+      <el-table-column prop="status" label="状态" width="80" v-if="!simple">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status" type="success" disable-transitions>正常</el-tag>
           <el-tag v-else type="info" disable-transitions>失效</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" label="操作" width="180">
+      <el-table-column v-if="!simple" label="操作" width="180">
         <template slot-scope="scope">
-          <el-button size="small" type="info" icon="edit" @click="() => toEdit(scope.row)">编辑</el-button>
+          <el-button v-if="!scope.row.autoGenerate" size="small" type="info" icon="edit" @click="() => toEdit(scope.row)">编辑</el-button>
           <el-button size="small" type="danger" icon="delete" @click="() => onRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" label="操作" width="200">
+      <el-table-column v-if="!simple" label="操作" width="200">
         <template slot-scope="scope">
-          <el-button size="small" @click="() => toExamQuestion(scope.row)">添加题目</el-button>
+          <el-button size="small" @click="() => toExamQuestion(scope.row)">查看题目</el-button>
           <el-button size="small" @click="() => onChange(scope.row)">查看成绩</el-button>
         </template>
       </el-table-column>
@@ -68,6 +72,10 @@ export default {
   name: 'ExamTable',
   props: {
     selection: {
+      type: Boolean,
+      default: false
+    },
+    simple: {
       type: Boolean,
       default: false
     },
@@ -91,10 +99,18 @@ export default {
       parseTime
     }
   },
-  watch: {
-    refresh() {
+  computed: {
+    answerModeEnums() {
+      return this.$store.getters['dataDict/answerModeEnums']
+    }
+  },
+  created() {
+    if (this.refresh) {
       this.initData()
     }
+  },
+  activated() {
+    this.initData()
   },
   methods: {
     initData() {

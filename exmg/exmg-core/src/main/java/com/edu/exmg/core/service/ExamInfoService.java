@@ -2,6 +2,7 @@ package com.edu.exmg.core.service;
 
 import java.util.List;
 
+import com.edu.exmg.common.exception.BizException;
 import com.edu.exmg.common.service.IService;
 import com.edu.exmg.common.vo.PageVO;
 import com.edu.exmg.core.bean.ExamInfo;
@@ -25,7 +26,7 @@ public interface ExamInfoService extends IService<ExamInfo, ExamInfoDTO, ExamInf
 	 * @param query
 	 * @return
 	 */
-	ExamInfoVO userRandomExam(QuestionInfoQuery query);
+	ExamInfoVO userRandomExam(QuestionInfoQuery query) throws BizException;
 
 	/**
 	 * 查询用户考试列表

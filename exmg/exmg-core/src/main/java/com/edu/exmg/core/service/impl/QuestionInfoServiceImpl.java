@@ -170,12 +170,19 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 		return questionIds;
 	}
 
+	/**
+	 * 随机出题
+	 * @param query
+	 * @return
+	 */
 	@Override
 	public List<ExamQuestionVO> randomQuestion(QuestionInfoQuery query) {
+		// 查所有题目信息
 		List<Integer> questionIds = questionInfoExtMapper.questionInfoIds(query);
 		Integer limit = query.getPageSize();
 		List<Integer> randomIds = new ArrayList<>();
 		Set<Integer> visited = new HashSet<>();
+		// TODO 随机挑选limit个题目
 		while (randomIds.size() < limit) {
 			int index = RandomUtils.nextInt(0, questionIds.size());
 			if (!visited.contains(index)) {
@@ -183,18 +190,27 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 				randomIds.add(questionIds.get(index));
 			}
 		}
+		// 标记题目顺序
 		Map<Integer, Integer> orderMap = orderQuestionMap(randomIds);
 		ExamQuestionQuery eqQuery = query.toExamQuestionQuery();
 		eqQuery.setQuestionIds(randomIds);
+		// 根据id查题目信息
 		List<ExamQuestionVO> result = questionInfoExtMapper.questionUnionOption(eqQuery);
+		// 整理序号
 		for (ExamQuestionVO questionVO : result) {
 			questionVO.setSorted(orderMap.get(questionVO.getQuestionId()));
 		}
+		// 查询结果排序
 		result.sort(Comparator.comparingInt(ExamQuestionVO::getSorted));
 
 		return result;
 	}
 
+	/**
+	 * 标记题目顺序
+	 * @param questionIds
+	 * @return
+	 */
 	private Map<Integer, Integer> orderQuestionMap(List<Integer> questionIds) {
 		Map<Integer, Integer> result = new HashMap<>();
 		for (int index = 0; index < questionIds.size(); index++) {
@@ -242,32 +258,6 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 		convergeAnswer.setTotalNum(totalNum);
 		convergeAnswer.setTotalScore((int) ((float)rightNum / (float) totalNum * 100));
 		return convergeAnswer;
-	}
-
-
-	@Override
-	public IResult resignExamQuestion(Integer examId, List<ExamQuestionDTO> exqtList) {
-		ExamQuestionExample example = new ExamQuestionExample();
-		example.createCriteria().andExamIdEqualTo(examId);
-		examQuestionMapper.deleteByExample(example);
-		ExamInfo examInfo = examInfoMapper.selectByPrimaryKey(examId);
-		Integer totalScore = examInfo.getTotalScore();
-		Integer subScore = totalScore / exqtList.size();
-		Integer remainScore = totalScore;
-
-		for (ExamQuestionDTO examQuestionDTO : exqtList) {
-			ExamQuestion examQuestion = ConverterUtils.copyBean(examQuestionDTO, ExamQuestion.class);
-			examQuestion.setStatus(false);
-			examQuestion.setVersion(0);
-			if (remainScore > subScore) {
-				examQuestion.setScore(subScore);
-			} else {
-				examQuestion.setScore(remainScore);
-			}
-			remainScore = totalScore - subScore;
-			examQuestionMapper.insertSelective(examQuestion);
-		}
-		return Result.success("success");
 	}
 
 	@Override

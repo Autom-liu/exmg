@@ -14,7 +14,7 @@
         </el-form-item>
         <el-form-item label="答题模式">
           <el-select v-model="form.answerMode">
-            <el-option label="答题卡模式" :value="1" />
+            <el-option v-for="(value, key) in answerModeEnums" :key="Number(key)" :label="value" :value="Number(key)" />
           </el-select>
         </el-form-item>
         <el-form-item label="考试封面缩略图">
@@ -95,6 +95,9 @@ export default {
     }
   },
   computed: {
+    answerModeEnums() {
+      return this.$store.getters['dataDict/answerModeEnums']
+    },
     submitTxt() {
       return this.isEdit ? '编辑' : '新增'
     },

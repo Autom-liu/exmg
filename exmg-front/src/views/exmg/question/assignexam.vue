@@ -1,90 +1,125 @@
 <template>
   <el-container>
     <el-main>
-      <el-steps :active="active" finish-status="success">
-        <el-step title="选择题目" />
-        <el-step title="设置属性" />
-        <el-step title="完成" />
-      </el-steps>
-      <el-button-group style="margin-top: 12px;">
-        <el-button @click="next">下一步</el-button>
-        <el-button v-if="active === 0" @click="questionField.commitSelect">选定题目</el-button>
-      </el-button-group>
-
-      <question-table v-if="active === 0" selection :refresh="questionField.refresh" :query="query" :default-selection="questionField.submitRows" @table-click="questionField.onSelect" />
+      <el-row style="width: 100%">
+        <el-col :span="6" style="min-height: 100px" />
+        <el-col :span="12">
+          <el-form label-width="120px">
+            <el-form-item label="题目列表">
+              <el-input type="textarea" autosize :value="questionTexts" disabled>
+              </el-input>
+            </el-form-item>
+            <el-form-item label="考试编号">
+                <el-row style="width: 100%">
+                  <el-col :span="12">
+                    <el-select v-model="form.attrs.examId" disabled placeholder="试题必选">
+                      <el-option :key="examDialog.selectedRow.id" :label="`${examDialog.selectedRow.id} - ${examDialog.selectedRow.examName}`" :value="examDialog.selectedRow.id" />
+                    </el-select>
+                  </el-col>
+                  <el-col :span="4" style="padding-top: 1px"></el-col>
+                  <el-col :span="8">
+                    <el-button type="primary" round @click="examDialog.onShow">选择考试</el-button>
+                  </el-col>
+                </el-row>
+            </el-form-item>
+            <el-form-item label="分数">
+              <el-input v-model="form.attrs.score" />
+            </el-form-item>
+            <el-form-item label="排序">
+              <el-input v-model="form.attrs.sorted" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="onSubmit">新增题目</el-button>
+              <el-button type="primary" @click="onRemove">移除题目</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
     </el-main>
+    <el-dialog title="考试列表" :visible="examDialog.show" @close="examDialog.onClose">
+      <exam-table selection simple :query="examDialog.query" refresh @table-click="examDialog.onSelectedRows" />
+    </el-dialog>
+
   </el-container>
 </template>
 
 <script>
-import QuestionTable from './components/QuestionTable'
+import ExamTable from '../exam/components/ExamTable'
 import { resignExamQuestion } from '@/api/question'
 
 export default {
   name: 'AssignExam',
-  components: { QuestionTable },
+  components: { ExamTable },
   data() {
     return {
-      active: 0,
-      query: {
-        currentPage: 1,
-        pageSize: 1000
-      },
-      examInfo: {},
-      questionField: {
+      dialogTableVisible: false,
+      questions: [],
+      examDialog: {
         show: false,
+        query: {
+          autoGenerate: false,
+          status: true
+        },
+        selectedRow: { id: 0},
         refresh: false,
-        currentPage: 1,
-        rows: [],
-        submitRows: [],
         onShow: () => {
-          this.questionField.show = true
-          this.$nextTick(() => {
-            this.questionField.refresh = !this.questionField.refresh
-            this.questionField.submitRows = this.$route.params.tableData
-            this.questionField.currentPage = this.query.currentPage
-          })
+          this.examDialog.refresh = this.$set(this.examDialog, 'refresh', !this.examDialog.refresh)
+          this.examDialog.show = true
         },
-        onSelect: (rows) => {
-          this.questionField.rows = rows
+        onSelectedRows: (row) => {
+          this.examDialog.selectedRow = row
+          this.form.attrs.examId = row.id
+          this.examDialog.show = false
         },
-        commitSelect: () => {
-          this.questionField.submitRows = this.questionField.rows
-        },
-        onSubmit: () => {
-          const exqtList = []
-          const examId = this.examInfo.id
-          for (const item of this.questionField.submitRows) {
-            exqtList.push({ examId, questionId: item.id, sorted: item.id })
-          }
-          const submitData = { examId, exqtList }
-          resignExamQuestion(submitData).then((response) => {
-            this.$message({ message: response.msg, type: 'success' })
-          })
+        onClose: () => {
+          this.examDialog.show = false
         }
+      },
+      query: {
+
+      },
+      form: {
+        attrs: {
+          op: '',
+          examId: null,
+          score: 0,
+          sorted: -1
+        },
+        questionIds: []
       }
     }
   },
+  computed: {
+    questionTexts() {
+      return this.questions.map(x => `${x.id} - ${x.question}`).join('\n')
+    }
+  },
   created() {
-    this.examInfo = this.$route.params.examInfo
+
   },
   activated() {
-    this.questionField.onShow()
+    this.initPage()
   },
   methods: {
-    next() {
-      if (this.active === 0) {
-        this.active++
-      } else if (this.active === 1) {
-        this.questionField.onSubmit()
-        this.active++
-      } else {
-        this.returnBackPage()
-      }
+    initPage() {
+      this.questions = this.$route.params.questions
+      this.form.questionIds = this.questions.map(x => x.id)
     },
     returnBackPage() {
       this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.replace({ name: 'ExamList' })
+      this.$router.replace({ name: 'QuestionList' })
+    },
+    onSubmit() {
+      this.form.attrs.op = 'A'
+      this.submit()
+    },
+    onRemove() {
+      this.form.attrs.op = 'D'
+      this.submit()
+    },
+    submit() {
+      console.log({...this.form})
+      resignExamQuestion({...this.form})
     }
   }
 

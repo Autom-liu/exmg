@@ -1,7 +1,8 @@
 <template>
   <el-main>
     <el-table ref="multipleTable" :data="tableData" border highlight-current-row @selection-change="onTableSelected">
-      <el-table-column v-if="selection" type="selection" width="55" />
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="id" label="id" width="60"/>
       <el-table-column prop="question" label="题目" />
       <el-table-column prop="questionType" label="题目类型" width="80">
         <template slot-scope="scope">
@@ -11,7 +12,7 @@
       <el-table-column prop="difficulty" label="难度" width="80" />
       <el-table-column prop="categoryId" label="分类" width="80">
         <template slot-scope="scope">
-          {{ dict.categoryDict[scope.row.categoryId] }}
+          {{ examCategoryEnums[scope.row.categoryId] }}
         </template>
       </el-table-column>
       <el-table-column prop="common" label="公共题库" width="80">
@@ -20,24 +21,28 @@
           <el-tag v-else type="info" disable-transitions>否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" prop="interpretation" label="题目解析" />
-      <el-table-column v-if="!selection" prop="picsUrl" label="图片" width="180">
+      <el-table-column v-if="!selection" prop="interpretation" label="题目解析" width="80">
+        <template slot-scope="scope">
+          <el-link type="primary" @click="interpretationDialog.onShow(scope.row)">点击查看</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="!selection" prop="picsUrl" label="图片" width="120">
         <template slot-scope="scope">
           <el-image style="width: 100px; height: 100px" :src="scope.row.picsUrl.split(',')[0]" :preview-src-list="scope.row.picsUrl.split(',')" />
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" prop="options" label="选项" width="180">
+      <el-table-column v-if="!selection" prop="options" label="选项" width="80">
         <template slot-scope="scope">
           <el-link type="primary" @click="optionDialog.onShow(scope.row)">点击查看</el-link>
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" label="操作" width="180">
+      <el-table-column v-if="!selection" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button size="small" type="info" icon="edit" @click="() => toEdit(scope.row)">编辑</el-button>
-          <el-button size="small" type="danger" icon="delete" @click="() => onRemove(scope.row)">删除</el-button>
+          <el-button :class="['btn-col']" size="small" type="info" icon="edit" @click="() => toEdit(scope.row)">编辑</el-button>
+          <el-button :class="['btn-col']" size="small" type="danger" icon="delete" @click="() => onRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
-      <el-table-column v-if="!selection" label="操作" width="200">
+      <el-table-column v-if="!selection" label="操作" width="100">
         <template slot-scope="scope">
           <el-button size="small" @click="() => onChange(scope.row)">做题报告</el-button>
         </template>
@@ -57,6 +62,9 @@
         </el-table-column>
         <el-table-column property="interpretation" label="选项解析" />
       </el-table>
+    </el-dialog>
+    <el-dialog title="题目解析" :visible.sync="interpretationDialog.show">
+      {{ interpretationDialog.current }}
     </el-dialog>
   </el-main>
 </template>
@@ -98,17 +106,19 @@ export default {
           this.optionDialog.show = true
         }
       },
+      interpretationDialog: {
+        show: false,
+        current: '',
+        onShow: (row) => {
+          this.interpretationDialog.current = row.interpretation
+          this.interpretationDialog.show = true
+        }
+      },
       dict: {
         questionTypeDict: {
           1: '单选',
           2: '多选',
           3: '填空简答'
-        },
-        categoryDict: {
-          101: '数据结构与算法',
-          201: 'java语言基础',
-          202: '设计模式',
-          203: 'java语言核心技术(JVM与多线程)'
         }
       }
     }
@@ -116,6 +126,9 @@ export default {
   computed: {
     queryAction() {
       return pageQuestionList
+    },
+    examCategoryEnums() {
+      return this.$store.getters['dataDict/examCategoryEnums']
     }
   },
   watch: {
@@ -176,3 +189,8 @@ export default {
 }
 </script>
 
+<style>
+.el-button.btn-col {
+  margin-left: 0;
+}
+</style>

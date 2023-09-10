@@ -16,7 +16,7 @@
       </el-form>
     </el-header>
     <el-container>
-      <exam-table :query="query" :refresh="refresh" />
+      <exam-table :query="query" />
     </el-container>
   </el-container>
 </template>

@@ -78,13 +78,4 @@ public interface QuestionInfoService extends IService<QuestionInfo, QuestionInfo
 	 */
 	ConvergeAnswerVO simpleConverge(Integer examId, String userId);
 
-
-	/**
-	 * 重新分配考试题目
-	 * @param examId
-	 * @param exqtList
-	 * @return
-	 */
-	IResult resignExamQuestion(Integer examId, List<ExamQuestionDTO> exqtList);
-	
 }

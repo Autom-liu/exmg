@@ -6,6 +6,11 @@ public enum ErrorEnum implements IErrorEnum {
 
 	
 	ERRCODE_0000("0000", "success"),
+
+	/**
+	 * 数据不存在
+	 */
+	ERRCODE_0004("0004", "数据不存在"),
 	
 	
 	;

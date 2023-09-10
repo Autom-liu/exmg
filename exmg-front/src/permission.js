@@ -54,4 +54,9 @@ router.beforeEach(async(to, from, next) => {
 router.afterEach(() => {
   // finish progress bar
   NProgress.done()
+  // 初始化字典
+  const currentRoute = router.currentRoute.fullPath
+  if (!isWhiteList(currentRoute)) {
+    store.dispatch('dataDict/initDataDict')
+  }
 })

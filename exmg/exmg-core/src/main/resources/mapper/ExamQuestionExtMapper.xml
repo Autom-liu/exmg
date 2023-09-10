@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exmg.core.mapper.ExamQuestionExtMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.ExamQuestion">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="exam_id" jdbcType="INTEGER" property="examId" />
+    <result column="question_id" jdbcType="INTEGER" property="questionId" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="sorted" jdbcType="INTEGER" property="sorted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+
+
+  <insert id="insertNextSort">
+    insert into exam_question (exam_id,question_id,score,`sorted`)
+    SELECT #{examId},#{questionId},#{score}, IFNULL(max(sorted)+1,1) from exam_question where exam_id=1
+  </insert>
+
+
+  <update id="insertUpdateSort">
+    update exam_question set `sorted`=`sorted`+#{version} where exam_id=#{examId} and `sorted`>#{sorted}
+  </update>
+
+
+
+</mapper>

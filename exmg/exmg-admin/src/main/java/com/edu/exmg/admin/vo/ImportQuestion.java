@@ -49,7 +49,39 @@ public class ImportQuestion implements Serializable {
     @ExcelProperty(value = "选项3",order = 10)
     private String option3;
 
-    @ExcelProperty(value = "正确选项",order = 11)
+    @ExcelProperty(value = "选项4",order = 11)
+    private String option4;
+
+    @ExcelProperty(value = "选项5",order = 12)
+    private String option5;
+
+    @ExcelProperty(value = "选项6",order = 13)
+    private String option6;
+
+    @ExcelProperty(value = "选项7",order = 14)
+    private String option7;
+
+    @ExcelProperty(value = "选项8",order = 15)
+    private String option8;
+
+    @ExcelProperty(value = "选项9",order = 16)
+    private String option9;
+
+    @ExcelProperty(value = "正确选项",order = 17)
     private String answer;
 
+    public ImportQuestion(String question, String interpretation, Integer questionType, Integer difficulty, Integer topCategory, Integer categoryId, Boolean common, String option0, String option1, String option2, String option3, String answer) {
+        this.question = question;
+        this.interpretation = interpretation;
+        this.questionType = questionType;
+        this.difficulty = difficulty;
+        this.topCategory = topCategory;
+        this.categoryId = categoryId;
+        this.common = common;
+        this.option0 = option0;
+        this.option1 = option1;
+        this.option2 = option2;
+        this.option3 = option3;
+        this.answer = answer;
+    }
 }

@@ -21,12 +21,12 @@
         </el-form-item>
         <el-form-item label="题目知识一级分类">
           <el-select v-model="form.topCategory" @change="categoryField.onTopChange">
-            <el-option v-for="(item) in categoryField.cateList" :key="item.id" :label="item.value" :value="item.id" />
+            <el-option v-for="(label, key) in categoryField.topCategoryEnums" :key="Number(key)" :label="label" :value="Number(key)" />
           </el-select>
         </el-form-item>
         <el-form-item label="题目知识分类">
           <el-select v-model="form.categoryId">
-            <el-option v-for="item in categoryField.children" :key="item.id" :label="item.value" :value="item.id" />
+            <el-option v-for="(label, key) in categoryField.children" :key="Number(key)" :label="label" :value="Number(key)" />
           </el-select>
         </el-form-item>
         <el-form-item label="贡献为公共题目">
@@ -105,7 +105,7 @@ export default {
         questionType: 1,
         difficulty: 1,
         topCategory: 1,
-        categoryId: 1,
+        categoryId: 101,
         interpretation: 1,
         picsUrl: [],
         common: true,
@@ -154,71 +154,31 @@ export default {
           options[index].right = value
           this.$set(this.form, 'options', options)
         }
-      },
-      categoryField: {
-        cateList: [
-          {
-            id: 1,
-            value: '计算机基础知识',
-            children: [
-              {
-                id: 101,
-                value: '数据结构与算法'
-              }
-            ]
-          },
-          {
-            id: 2,
-            value: '编程语言基础',
-            children: [
-              {
-                id: 201,
-                value: 'java语言基础'
-              },
-              {
-                id: 202,
-                value: 'java语言核心技术(JVM与多线程)'
-              },
-              {
-                id: 203,
-                value: 'Linux Shell脚本'
-              }
-            ]
-          },
-          {
-            id: 3,
-            value: '框架与中间件技术',
-            children: [
-              {
-                id: 301,
-                value: 'Spring框架'
-              }
-            ]
-          },
-          {
-            id: 4,
-            value: '大数据建模与分析',
-            children: [
-              {
-                id: 401,
-                value: '大数据分析'
-              }
-            ]
-          }
-        ],
+      }
+    }
+  },
+  computed: {
+    categoryField() {
+      return {
+        topCategoryEnums: this.topCategoryEnums,
         children: [],
         init: () => {
           this.categoryField.onTopChange(1)
         },
         onTopChange: (id) => {
-          const item = this.categoryField.cateList[id - 1]
-          this.categoryField.children = [...item.children]
-          this.form.categoryId = item.children[0].id
+          const getCategoryByParentId = this.$store.getters['dataDict/getCategoryByParentId']
+          const children = getCategoryByParentId(id)
+          this.categoryField.children = children
+          if (Object.keys(children).length > 0) {
+            const chr = Object.keys(children)
+            this.form.categoryId = Number(chr[0])
+          }
         }
       }
-    }
-  },
-  computed: {
+    },
+    topCategoryEnums() {
+      return this.$store.getters['dataDict/topCategoryEnums']
+    },
     submitTxt() {
       return this.isEdit ? '编辑' : '新增'
     },

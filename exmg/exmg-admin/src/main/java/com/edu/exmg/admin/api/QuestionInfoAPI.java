@@ -8,29 +8,26 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteTable;
 import com.edu.exmg.admin.bean.User;
 import com.edu.exmg.admin.config.CurrentUser;
-import com.edu.exmg.admin.config.IgnorePermission;
-import com.edu.exmg.admin.dto.ExamQuestionAssignDTO;
 import com.edu.exmg.admin.enums.ErrorEnum;
 import com.edu.exmg.admin.vo.ExportCategory;
 import com.edu.exmg.admin.vo.ImportQuestion;
 import com.edu.exmg.admin.vo.UserEntity;
 import com.edu.exmg.common.exception.BizException;
-import com.edu.exmg.common.util.ConverterUtils;
+import com.edu.exmg.common.util.CollectionUtils;
 import com.edu.exmg.common.util.StringUtils;
 import com.edu.exmg.common.vo.IResult;
 import com.edu.exmg.common.vo.PageVO;
 import com.edu.exmg.common.vo.Result;
 import com.edu.exmg.common.vo.ResultList;
 import com.edu.exmg.common.vo.ResultPage;
-import com.edu.exmg.core.bean.ExamCategory;
-import com.edu.exmg.core.bean.OptionInfo;
 import com.edu.exmg.core.dto.ExamQuestionDTO;
 import com.edu.exmg.core.dto.OptionInfoDTO;
 import com.edu.exmg.core.dto.QuestionInfoDTO;
+import com.edu.exmg.core.enums.ExamCategoryEnums;
 import com.edu.exmg.core.query.ExamQuestionQuery;
 import com.edu.exmg.core.query.QuestionInfoQuery;
+import com.edu.exmg.core.service.ExamQuestionService;
 import com.edu.exmg.core.service.QuestionInfoService;
-import com.edu.exmg.core.vo.ExamCategoryVO;
 import com.edu.exmg.core.vo.ExamQuestionVO;
 import com.edu.exmg.core.vo.QuestionInfoVO;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -64,6 +59,9 @@ public class QuestionInfoAPI {
 
     @Autowired
     private QuestionInfoService questionInfoService;
+
+    @Autowired
+    private ExamQuestionService examQuestionService;
 
     @PostMapping("question/create")
     public IResult create(@Valid @RequestBody QuestionInfoDTO questionInfoDTO, @CurrentUser UserEntity userEntity) throws BizException {
@@ -127,13 +125,19 @@ public class QuestionInfoAPI {
     }
 
     @PostMapping("question/exam/assign")
-    public IResult assignExam(@RequestBody ExamQuestionAssignDTO examQuestionAssignDTO) throws BizException {
-        Integer examId = examQuestionAssignDTO.getExamId();
-        List<ExamQuestionDTO> exqtList = examQuestionAssignDTO.getExqtList();
-        if (examId == null) {
-            return IResult.error(ErrorEnum.ERRCODE_0403, "examId");
+    public IResult assignExam(@RequestBody ExamQuestionDTO attrs, List<Integer> questionIds) throws BizException {
+        if (attrs.getExamId() == null || attrs.getSorted() == null || attrs.getScore() == null) {
+            return IResult.error(ErrorEnum.ERRCODE_0403);
         }
-        return questionInfoService.resignExamQuestion(examId, exqtList);
+        if (StringUtils.isBlank(attrs.getOp())) {
+            return IResult.error(ErrorEnum.ERRCODE_0403);
+        }
+        if (CollectionUtils.isEmpty(questionIds)) {
+            return IResult.error(ErrorEnum.ERRCODE_0403);
+        }
+
+        return examQuestionService.assignExamQuestion(attrs, questionIds);
+
     }
 
     /**
@@ -164,8 +168,17 @@ public class QuestionInfoAPI {
             excelWriter.write(exmpleList, sheet0, writeTable0);
             WriteSheet cateSheet = EasyExcel.writerSheet(1, "知识分类表").build();
             WriteTable writeTable1 = EasyExcel.writerTable(0).head(ExportCategory.class).needHead(true).build();
-            List<ExamCategoryVO> cateList = ExamCategoryVO.resultList();
-            List<ExportCategory> exportCategories = ConverterUtils.copyList(cateList, ExportCategory.class);
+            ExamCategoryEnums[] cateList = ExamCategoryEnums.values();
+            List<ExportCategory> exportCategories = new ArrayList<>();
+            for (ExamCategoryEnums categoryEnums : cateList) {
+                ExportCategory exportCategory = new ExportCategory();
+                exportCategory.setId(categoryEnums.getCode());
+                exportCategory.setCategoryName(categoryEnums.getMsg());
+                exportCategory.setParentId(categoryEnums.getParentId());
+                exportCategory.setLevel(categoryEnums.isTop() ? 1 : 2);
+                exportCategories.add(exportCategory);
+            }
+
             excelWriter.write(exportCategories, cateSheet, writeTable1);
         } finally {
             if (excelWriter != null) {
@@ -208,31 +221,12 @@ public class QuestionInfoAPI {
                 questionInfoDTO.setCategoryId(importQuestion.getCategoryId());
                 questionInfoDTO.setPicsUrl("");
                 questionInfoDTO.setCommon(importQuestion.getCommon());
-                List<OptionInfoDTO> options = new ArrayList<>();
-                if (importQuestion.getOption0() != null) {
-                    OptionInfoDTO optionInfo = new OptionInfoDTO();
-                    optionInfo.setOption(importQuestion.getOption0());
-                    optionInfo.setRight(false);
-                    options.add(optionInfo);
-                }
-                if (importQuestion.getOption1() != null) {
-                    OptionInfoDTO optionInfo = new OptionInfoDTO();
-                    optionInfo.setOption(importQuestion.getOption1());
-                    optionInfo.setRight(false);
-                    options.add(optionInfo);
-                }
-                if (importQuestion.getOption2() != null) {
-                    OptionInfoDTO optionInfo = new OptionInfoDTO();
-                    optionInfo.setOption(importQuestion.getOption2());
-                    optionInfo.setRight(false);
-                    options.add(optionInfo);
-                }
-                if (importQuestion.getOption3() != null) {
-                    OptionInfoDTO optionInfo = new OptionInfoDTO();
-                    optionInfo.setOption(importQuestion.getOption3());
-                    optionInfo.setRight(false);
-                    options.add(optionInfo);
-                }
+                String[] importOptions = new String[] { importQuestion.getOption0(), importQuestion.getOption1(), importQuestion.getOption2(),
+                        importQuestion.getOption3(), importQuestion.getOption4(), importQuestion.getOption5(), importQuestion.getOption6(),
+                        importQuestion.getOption7(), importQuestion.getOption8(), importQuestion.getOption9()
+                };
+
+                List<OptionInfoDTO> options = makeOptionList(importOptions);
                 String answer = importQuestion.getAnswer();
                 if (answer != null) {
                     String[] answers = StringUtils.split(answer, ',');
@@ -249,6 +243,19 @@ public class QuestionInfoAPI {
                 } catch (BizException ex) {
                     log.error("", ex);
                 }
+            }
+
+            public List<OptionInfoDTO> makeOptionList(String[] importOptions) {
+                List<OptionInfoDTO> options = new ArrayList<>();
+                for (String importOption : importOptions) {
+                    if (StringUtils.isNotBlank(importOption)) {
+                        OptionInfoDTO optionInfo = new OptionInfoDTO();
+                        optionInfo.setOption(importOption);
+                        optionInfo.setRight(false);
+                        options.add(optionInfo);
+                    }
+                }
+                return options;
             }
 
             /**

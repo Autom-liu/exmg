@@ -52,6 +52,8 @@ public class ExamCategoryVO implements Serializable {
         result.add(new ExamCategoryVO(301, "Spring及Springboot", 3, 2, now, now, false, 0));
         result.add(new ExamCategoryVO(302, "mybatis", 3, 2, now, now, false, 0));
         result.add(new ExamCategoryVO(303, "数据库", 3, 2, now, now, false, 0));
+        result.add(new ExamCategoryVO(30302, "mysql数据库", 3, 2, now, now, false, 0));
+        result.add(new ExamCategoryVO(30303, "oracle数据库", 3, 2, now, now, false, 0));
         result.add(new ExamCategoryVO(304, "分布式缓存中间件", 3, 2, now, now, false, 0));
         result.add(new ExamCategoryVO(305, "分布式消息中间件", 3, 2, now, now, false, 0));
         result.add(new ExamCategoryVO(306, "分布式负载均衡", 3, 2, now, now, false, 0));
