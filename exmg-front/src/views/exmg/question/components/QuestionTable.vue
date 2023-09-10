@@ -2,7 +2,7 @@
   <el-main>
     <el-table ref="multipleTable" :data="tableData" border highlight-current-row @selection-change="onTableSelected">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="id" label="id" width="60"/>
+      <el-table-column prop="id" label="id" width="60" />
       <el-table-column prop="question" label="题目" />
       <el-table-column prop="questionType" label="题目类型" width="80">
         <template slot-scope="scope">

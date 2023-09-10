@@ -87,8 +87,8 @@ export default {
         this.$message({
           message: '请选择题目操作',
           type: 'warning'
-        });
-        return;
+        })
+        return
       }
       this.$store.dispatch('tagsView/delView', this.$route)
       this.$router.replace({ name: 'AssignExam', params: { questions: this.qstTable.selectedRows }})

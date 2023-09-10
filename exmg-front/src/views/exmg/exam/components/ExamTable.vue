@@ -11,34 +11,34 @@
         </template>
       </el-table-column>
       <el-table-column prop="maxCount" label="最大答题次数" width="80" />
-      <el-table-column prop="banner" label="是否展示首页" width="80" v-if="!simple">
+      <el-table-column v-if="!simple" prop="banner" label="是否展示首页" width="80">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.banner" type="success" disable-transitions>是</el-tag>
           <el-tag v-else type="info" disable-transitions>否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="autoGenerate" label="是否随机生成" width="80" v-if="!simple">
+      <el-table-column v-if="!simple" prop="autoGenerate" label="是否随机生成" width="80">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.autoGenerate" type="success" disable-transitions>是</el-tag>
           <el-tag v-else type="info" disable-transitions>否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="begintime" label="开始时间" width="180" v-if="!simple">
+      <el-table-column v-if="!simple" prop="begintime" label="开始时间" width="180">
         <template slot-scope="scope">
           {{ parseTime(scope.row.begintime, '{y}-{m}-{d}') }}
         </template>
       </el-table-column>
-      <el-table-column prop="endtime" label="结束时间" width="180" v-if="!simple">
+      <el-table-column v-if="!simple" prop="endtime" label="结束时间" width="180">
         <template slot-scope="scope">
           {{ parseTime(scope.row.endtime, '{y}-{m}-{d}') }}
         </template>
       </el-table-column>
-      <el-table-column label="封面缩略图" width="180" v-if="!simple">
+      <el-table-column v-if="!simple" label="封面缩略图" width="180">
         <template slot-scope="scope">
           <el-button size="small" @click="() => seeShortcut(scope.row)">查看缩略图</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态" width="80" v-if="!simple">
+      <el-table-column v-if="!simple" prop="status" label="状态" width="80">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status" type="success" disable-transitions>正常</el-tag>
           <el-tag v-else type="info" disable-transitions>失效</el-tag>
@@ -53,7 +53,7 @@
       <el-table-column v-if="!simple" label="操作" width="200">
         <template slot-scope="scope">
           <el-button size="small" @click="() => toExamQuestion(scope.row)">查看题目</el-button>
-          <el-button size="small" @click="() => onChange(scope.row)">查看成绩</el-button>
+          <el-button size="small" @click="() => toUserExamScore(scope.row)">查看成绩</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -150,6 +150,9 @@ export default {
     },
     toExamQuestion(row) {
       this.$router.push({ name: 'ExamQuestion', params: row })
+    },
+    toUserExamScore(row) {
+      this.$router.push({ name: 'UserExamScore', params: row })
     }
   }
 }

@@ -248,6 +248,13 @@ export const asyncRoutes = [
             hidden: true,
             name: 'ExamEdit',
             meta: { title: '试题编辑', icon: 'edit' }
+          },
+          {
+            path: '/exmg/exam/user/score',
+            component: () => import('@/views//exmg/exam/UserExamScore'),
+            hidden: true,
+            name: 'UserExamScore',
+            meta: { title: '查看用户考试成绩', icon: 'edit' }
           }
         ]
       },

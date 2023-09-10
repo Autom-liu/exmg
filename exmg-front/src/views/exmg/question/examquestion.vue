@@ -102,9 +102,9 @@ export default {
         },
         questionIds: [row.questionId]
       }
-      resignExamQuestion({...form}).then((response) => {
-        if (response.code = '0000') {
-          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() });
+      resignExamQuestion({ ...form }).then((response) => {
+        if (response.code === '0000') {
+          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() })
         }
       })
     },

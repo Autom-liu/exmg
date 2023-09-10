@@ -6,21 +6,20 @@
         <el-col :span="12">
           <el-form label-width="120px">
             <el-form-item label="题目列表">
-              <el-input type="textarea" autosize :value="questionTexts" disabled>
-              </el-input>
+              <el-input type="textarea" autosize :value="questionTexts" disabled />
             </el-form-item>
             <el-form-item label="考试编号">
-                <el-row style="width: 100%">
-                  <el-col :span="12">
-                    <el-select v-model="form.attrs.examId" disabled placeholder="试题必选">
-                      <el-option :key="examDialog.selectedRow.id" :label="`${examDialog.selectedRow.id} - ${examDialog.selectedRow.examName}`" :value="examDialog.selectedRow.id" />
-                    </el-select>
-                  </el-col>
-                  <el-col :span="4" style="padding-top: 1px"></el-col>
-                  <el-col :span="8">
-                    <el-button type="primary" round @click="examDialog.onShow">选择考试</el-button>
-                  </el-col>
-                </el-row>
+              <el-row style="width: 100%">
+                <el-col :span="12">
+                  <el-select v-model="form.attrs.examId" disabled placeholder="试题必选">
+                    <el-option :key="examDialog.selectedRow.id" :label="`${examDialog.selectedRow.id} - ${examDialog.selectedRow.examName}`" :value="examDialog.selectedRow.id" />
+                  </el-select>
+                </el-col>
+                <el-col :span="4" style="padding-top: 1px" />
+                <el-col :span="8">
+                  <el-button type="primary" round @click="examDialog.onShow">选择考试</el-button>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="分数">
               <el-input v-model="form.attrs.score" />
@@ -60,7 +59,7 @@ export default {
           autoGenerate: false,
           status: true
         },
-        selectedRow: { id: 0},
+        selectedRow: { id: 0 },
         refresh: false,
         onShow: () => {
           this.examDialog.refresh = this.$set(this.examDialog, 'refresh', !this.examDialog.refresh)
@@ -118,10 +117,10 @@ export default {
       this.submit()
     },
     submit() {
-      resignExamQuestion({...this.form}).then((response) => {
+      resignExamQuestion({ ...this.form }).then((response) => {
         console.log(response)
-        if (response.code = '0000') {
-          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() });
+        if (response.code === '0000') {
+          this.$message({ message: '操作成功', type: 'success', onClose: () => this.returnBackPage() })
         }
       })
     }
