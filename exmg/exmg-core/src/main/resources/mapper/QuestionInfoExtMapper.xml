@@ -87,6 +87,9 @@
     <result column="question_type" jdbcType="INTEGER" property="questionType" />
     <result column="difficulty" jdbcType="INTEGER" property="difficulty" />
     <result column="top_category" jdbcType="INTEGER" property="topCategory" />
+    <result column="pics_url" jdbcType="VARCHAR" property="picsUrl" />
+    <result column="sorted" jdbcType="VARCHAR" property="sorted" />
+    <result column="record_id" jdbcType="INTEGER" property="recordId" />
     <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     <result column="interpretation" jdbcType="INTEGER" property="interpretation" />
     <collection property="options" ofType="com.edu.exmg.core.bean.OptionInfo">
@@ -117,7 +120,8 @@
   </select>
 
   <select id="questionUnionOption" resultMap="QuestionOptionsMap">
-    select qi.id qid, qi.question, qi.question_type, qi.top_category, qi.category_id, oi.id oid, oi.`option`, oi.question_id, oi.option_type
+    select qi.id qid, qi.question, qi.pics_url, qi.question_type, qi.top_category, qi.category_id, qi.interpretation, qi.pics_url,
+      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right
     from question_info qi left join option_info oi on qi.id = oi.question_id
     <where>
       <foreach collection="questionIds" item="qid" separator="," open="qi.id in (" close=")">
@@ -127,7 +131,9 @@
   </select>
 
   <select id="questionUnionUserOption" resultMap="QuestionOptionsMap">
-    select qi.id qid, qi.question, qi.question_type, qi.top_category, qi.category_id, qi.interpretation, oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right, ua.`right` user_right
+    select qi.id qid, qi.question, qi.question_type, qi.top_category, qi.category_id, qi.interpretation, qi.pics_url,
+      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right,
+      ua.`right` user_right,ua.`record_id`,ua.`sorted`
     from question_info qi left join option_info oi on qi.id = oi.question_id
     left join user_answer ua on oi.id = ua.option_id
     <where>
@@ -137,10 +143,14 @@
       <if test="examId != null and examId != ''">
         AND ua.exam_id = #{examId}
       </if>
+      <if test="recordId != null and recordId != ''">
+        AND ua.record_id = #{recordId}
+      </if>
       <foreach collection="questionIds" item="qid" separator="," open="AND qi.id in (" close=")">
         #{qid}
       </foreach>
     </where>
+    order by ua.sorted
   </select>
 
   <select id="examQuestionIds" resultType="java.lang.Integer">
@@ -182,7 +192,7 @@
   </select>
 
   <select id="convergeAnswerResult" resultType="com.edu.exmg.core.vo.ConvergeAnswerVO">
-    select question_id, count(option_id) rightNum, sum(`right`) totalNum from user_answer where user_id = #{userId} and exam_id = #{examId} group by question_id
+    select question_id, count(option_id) rightNum, sum(`right`) totalNum from user_answer where user_id = #{userId} and exam_id = #{examId} and record_id=#{recordId} group by question_id
   </select>
 
 

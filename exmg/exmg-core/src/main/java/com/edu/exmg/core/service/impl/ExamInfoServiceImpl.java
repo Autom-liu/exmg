@@ -65,9 +65,6 @@ public class ExamInfoServiceImpl extends CommonService<ExamInfo, ExamInfoDTO, Ex
 			examQuestion.setScore(examInfo.getTotalScore() / examQuestions.size());
 			examQuestionService.insert(examQuestion);
 		}
-
-
-
 		return result;
 	}
 

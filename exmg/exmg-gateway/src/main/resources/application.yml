@@ -10,5 +10,5 @@ spring:
 
 files:
   upload:
-    absolutePath: /home/autom/project/exmg/wxmin/exmg-mpvue/static/images
+    absolutePath: /home/admin/exmg/admin/public/static
     relativePath: /static/images

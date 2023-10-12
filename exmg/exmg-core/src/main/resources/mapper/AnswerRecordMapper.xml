@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.edu.exmg.core.mapper.UserAnswerMapper">
-  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.UserAnswer">
+<mapper namespace="com.edu.exmg.core.mapper.AnswerRecordMapper">
+  <resultMap id="BaseResultMap" type="com.edu.exmg.core.bean.AnswerRecord">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="record_id" jdbcType="INTEGER" property="recordId" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="exam_id" jdbcType="INTEGER" property="examId" />
-    <result column="question_id" jdbcType="INTEGER" property="questionId" />
-    <result column="option_id" jdbcType="INTEGER" property="optionId" />
-    <result column="score" jdbcType="INTEGER" property="score" />
-    <result column="sorted" jdbcType="INTEGER" property="sorted" />
-    <result column="answer" jdbcType="VARCHAR" property="answer" />
-    <result column="right" jdbcType="BIT" property="right" />
+    <result column="total_num" jdbcType="INTEGER" property="totalNum" />
+    <result column="right_num" jdbcType="INTEGER" property="rightNum" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -84,10 +81,9 @@
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `record_id`, `user_id`, `exam_id`, `question_id`, `option_id`, `score`, `sorted`, 
-    `answer`, `right`
+    `id`, `user_id`, `exam_id`, `total_num`, `right_num`, `start_time`, `end_time`
   </sql>
-  <select id="selectByExample" parameterType="com.edu.exmg.core.bean.UserAnswerExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.edu.exmg.core.bean.AnswerRecordExample" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
     -->
@@ -96,7 +92,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from user_answer
+    from answer_record
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -104,20 +100,20 @@
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.edu.exmg.core.bean.UserAnswerExample">
+  <delete id="deleteByExample" parameterType="com.edu.exmg.core.bean.AnswerRecordExample">
     <!--
       WARNING - @mbg.generated
     -->
-    delete from user_answer
+    delete from answer_record
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <select id="countByExample" parameterType="com.edu.exmg.core.bean.UserAnswerExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.edu.exmg.core.bean.AnswerRecordExample" resultType="java.lang.Long">
     <!--
       WARNING - @mbg.generated
     -->
-    select count(*) from user_answer
+    select count(*) from answer_record
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -126,13 +122,10 @@
     <!--
       WARNING - @mbg.generated
     -->
-    update user_answer
+    update answer_record
     <set>
       <if test="record.id != null">
         `id` = #{record.id,jdbcType=INTEGER},
-      </if>
-      <if test="record.recordId != null">
-        `record_id` = #{record.recordId,jdbcType=INTEGER},
       </if>
       <if test="record.userId != null">
         `user_id` = #{record.userId,jdbcType=VARCHAR},
@@ -140,23 +133,17 @@
       <if test="record.examId != null">
         `exam_id` = #{record.examId,jdbcType=INTEGER},
       </if>
-      <if test="record.questionId != null">
-        `question_id` = #{record.questionId,jdbcType=INTEGER},
+      <if test="record.totalNum != null">
+        `total_num` = #{record.totalNum,jdbcType=INTEGER},
       </if>
-      <if test="record.optionId != null">
-        `option_id` = #{record.optionId,jdbcType=INTEGER},
+      <if test="record.rightNum != null">
+        `right_num` = #{record.rightNum,jdbcType=INTEGER},
       </if>
-      <if test="record.score != null">
-        `score` = #{record.score,jdbcType=INTEGER},
+      <if test="record.startTime != null">
+        `start_time` = #{record.startTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.sorted != null">
-        `sorted` = #{record.sorted,jdbcType=INTEGER},
-      </if>
-      <if test="record.answer != null">
-        `answer` = #{record.answer,jdbcType=VARCHAR},
-      </if>
-      <if test="record.right != null">
-        `right` = #{record.right,jdbcType=BIT},
+      <if test="record.endTime != null">
+        `end_time` = #{record.endTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null">
@@ -167,17 +154,14 @@
     <!--
       WARNING - @mbg.generated
     -->
-    update user_answer
+    update answer_record
     set `id` = #{record.id,jdbcType=INTEGER},
-      `record_id` = #{record.recordId,jdbcType=INTEGER},
       `user_id` = #{record.userId,jdbcType=VARCHAR},
       `exam_id` = #{record.examId,jdbcType=INTEGER},
-      `question_id` = #{record.questionId,jdbcType=INTEGER},
-      `option_id` = #{record.optionId,jdbcType=INTEGER},
-      `score` = #{record.score,jdbcType=INTEGER},
-      `sorted` = #{record.sorted,jdbcType=INTEGER},
-      `answer` = #{record.answer,jdbcType=VARCHAR},
-      `right` = #{record.right,jdbcType=BIT}
+      `total_num` = #{record.totalNum,jdbcType=INTEGER},
+      `right_num` = #{record.rightNum,jdbcType=INTEGER},
+      `start_time` = #{record.startTime,jdbcType=TIMESTAMP},
+      `end_time` = #{record.endTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>

@@ -3,7 +3,7 @@
     <div class="list-wrapper">
       <div class="list-title">答题列表</div>
       <div class="list-inner">
-        <div v-for="item in examList" :key="id" class="list-table" @click="toDetail(item)">
+        <div v-for="item in examList" :key="item.id" class="list-table" @click="toDetail(item)">
           <div class="list-info">
             <div class="title">{{item.examName}}</div>
             <div class="time">{{ item.examRemark }}</div>

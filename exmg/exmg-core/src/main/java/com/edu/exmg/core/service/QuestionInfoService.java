@@ -7,7 +7,7 @@ import com.edu.exmg.common.service.IService;
 import com.edu.exmg.common.vo.IResult;
 import com.edu.exmg.common.vo.PageVO;
 import com.edu.exmg.core.bean.QuestionInfo;
-import com.edu.exmg.core.dto.ExamQuestionDTO;
+import com.edu.exmg.core.bean.QuestionInfoExample;
 import com.edu.exmg.core.dto.QuestionInfoDTO;
 import com.edu.exmg.core.dto.UserAnswerDTO;
 import com.edu.exmg.core.query.ExamQuestionQuery;
@@ -33,6 +33,13 @@ public interface QuestionInfoService extends IService<QuestionInfo, QuestionInfo
 	IResult editQuestion(QuestionInfoDTO dto);
 
 	/**
+	 * 统计满足条件的题目数量
+	 * @param example
+	 * @return
+	 */
+	long countByCriteria(QuestionInfoExample example);
+
+	/**
 	 * 分页考试题目列表查询
 	 * @param query
 	 * @return
@@ -45,6 +52,14 @@ public interface QuestionInfoService extends IService<QuestionInfo, QuestionInfo
 	 * @return
 	 */
 	List<ExamQuestionVO> queryAllQuestionWithUnknownOption(ExamQuestionQuery query);
+
+
+	/**
+	 * 练习模式下随机选取题目并展示答案
+	 * @param query
+	 * @return
+	 */
+	List<ExamQuestionVO> queryAllQuestionWithKnownOption(QuestionInfoQuery query);
 
 	/**
 	 * 查询用户答题详细情况
@@ -68,14 +83,16 @@ public interface QuestionInfoService extends IService<QuestionInfo, QuestionInfo
 	 * @param userAnswers
 	 * @return
 	 */
-	IResult submitUserAnswer(Integer examId, String userId, List<UserAnswerDTO> userAnswers);
+	IResult submitUserAnswer(Integer examId, String userId, Integer recordId, List<UserAnswerDTO> userAnswers);
 
 	/**
 	 * 简单统计用户答题数据
+	 *
 	 * @param examId
 	 * @param userId
+	 * @param recordId
 	 * @return
 	 */
-	ConvergeAnswerVO simpleConverge(Integer examId, String userId);
+	ConvergeAnswerVO simpleConverge(Integer examId, String userId, Integer recordId);
 
 }

@@ -19,6 +19,8 @@ public class ExamQuestionQuery extends PageQuery {
 
 	private String userId;
 
+	private Integer recordId;
+
 	private Boolean common;
 
 	private Integer topCategory;

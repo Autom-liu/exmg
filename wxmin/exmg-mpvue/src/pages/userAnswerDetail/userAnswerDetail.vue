@@ -5,7 +5,7 @@
     </div>
     <div class="option-wapper">
       <div class="option-box">
-        <div :class="'option-item ' + iconNames[option.right << 1 | option.status]" v-for="option in options" :key="id">
+        <div :class="'option-item ' + iconNames[option.right << 1 | option.status]" v-for="option in options" :key="option.id">
           <van-icon :name="iconNames[option.right << 1 | option.status]" />
           {{option.option}}
         </div>
@@ -85,7 +85,7 @@ export default {
     },
     rightAnswerTxt () {
       const ops = [...this.options]
-      const labels = ['A', 'B', 'C', 'D']
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
       for (let index = 0; index < ops.length; index++) {
         ops[index].label = labels[index]
       }
@@ -94,7 +94,7 @@ export default {
     },
     yourAnswerTxt () {
       const ops = [...this.options]
-      const labels = ['A', 'B', 'C', 'D']
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
       for (let index = 0; index < ops.length; index++) {
         ops[index].label = labels[index]
       }
@@ -122,8 +122,8 @@ export default {
     }
   },
   mounted () {
-    const { id, userId } = this.$route.query
-    const params = { examId: id, userId }
+    const { id, userId, recordId } = this.$route.query
+    const params = { examId: id, userId, recordId }
     this.currentIndex = 0
     http.post('/question/user/answer/detail', params).then((response) => {
       console.log(response)
@@ -155,6 +155,7 @@ export default {
   width: 100px;
   height: 10px;
 }
+
 .option-wapper {
   margin-top: 24px;
 }

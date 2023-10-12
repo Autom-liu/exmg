@@ -22,6 +22,8 @@ public class ExamQuestionVO implements Serializable {
     
     private Integer examId;
 
+    private Integer recordId;
+
     private Integer questionId;
     
     private Integer score;
@@ -29,6 +31,8 @@ public class ExamQuestionVO implements Serializable {
     private Integer sorted;
 
     private String question;
+
+    private String picsUrl;
 
     private Integer questionType;
 

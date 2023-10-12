@@ -175,6 +175,7 @@ create table if not exists `exam_question` (
 drop table if exists `user_answer`;
 create table if not exists `user_answer` (
     `id` int key primary key auto_increment comment '主键',
+    `record_id` int comment '答题记录id',
     `user_id` varchar(128) comment '用户',
     `exam_id` int comment '试题',
     `question_id` int comment '题目',
@@ -186,4 +187,13 @@ create table if not exists `user_answer` (
 )  comment='答题信息表' engine=Innodb DEFAULT CHARSET=utf8;
 
 
-show tables ;
+drop table if exists `answer_record`;
+create table if not exists `answer_record` (
+    `id` int key primary key auto_increment comment '主键',
+    `user_id` varchar(128) comment '用户',
+    `exam_id` int comment '试题',
+    `total_num` int comment '总题数',
+    `right_num` int comment '正确题数',
+    `start_time` datetime comment '开始答题时间',
+    `end_time` datetime comment '结束答题时间'
+)  comment='答题记录表' engine=Innodb DEFAULT CHARSET=utf8;

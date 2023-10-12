@@ -1,26 +1,43 @@
 <template>
   <van-row>
+    <div class="notice">
+      <img class="icon" src="/static/images/boardcast.png">
+      <div class="text-container">
+        <div class="text" ref="text">{{ noticeText }}</div>
+      </div>
+    </div>
     <van-row>
-      <van-image width="350" height="100" />
+      <van-image src="https://pic.5tu.cn/uploads/allimg/1911/pic_5tu_big_201911110937385525.jpg" width="350" height="100" />
     </van-row>
-    <van-tabs :active="active" bind:change="onChange">
-      <van-tab v-for="(title, id) in cateTabs" :key="id" :title="title">
-        <van-row custom-class="middle">
-          <van-circle  :value="75" :color="gradientColor" text="随机出题" fill="#FF7F50" layer-color="#FFB6C1" @click="toStartExam"></van-circle>
-        </van-row>
-      </van-tab>
-    </van-tabs>
+    <div class="category-bar" @touchstart="startDrag" @touchmove="drag" @touchend="dragEnd">
+      <div class="category-override" :style="categoryTabsAttr.overrideStyle">
+        <div class="slider" :style="categoryTabsAttr.sliderStyle" ref="slider">
+          <!-- 忽视报错,在小程序中需要这样的写法-->
+          <div class="category" :style="categoryTabsAttr.itemStyle" v-for="category in categoryField.categories" :key="code" @click="toRandomExercise(category)">
+            <img src="/static/images/database.png" alt="图标">
+            <span>{{ category.msg }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="page-indicator">
+        <span v-for="(_, index) in categoryTabsAttr.pageCount" :key="index" :class="{ 'active': index === categoryField.categoryPageActive }"></span>
+      </div>
+    </div>
+
     <div class="list-wrapper">
       <div class="list-title">精选试题</div>
       <div class="list-inner">
-        <div v-for="item in examList" :key="item.id" class="list-table" @click="toQuestion(item)">
+        <!-- 忽视报错,在小程序中需要这样的写法-->
+        <div v-for="item in examList" :key="id" class="list-table" @click="toQuestion(item)">
           <div class="list-img">
             <image-view :src="item.picUrl"></image-view>
           </div>
-          <div class="list-info">
+          <div class="content-container">
             <div class="title">{{item.examName}}</div>
-            <div class="time">{{ item.examRemark }}</div>
             <div class="time">{{ item.begintime }}</div>
+          </div>
+          <div class="arrow-container">
+            <img src="/static/images/arrowright.png" class="arrow-icon">
           </div>
         </div>
       </div>
@@ -42,21 +59,52 @@ export default {
   },
   data () {
     return {
-      gradientColor: {'0%': '#ffd01e', '100%': '#ee0a24'},
-      active: 1,
-      cateTabs: {
-        1: '基础知识',
-        2: '编程语言',
-        3: '框架中间件'
+      noticeText: '欢迎使用答题宝，有任何问题欢迎各位给我建议反馈以及交流沟通',
+      categoryField: {
+        categories: [],
+        // 分类栏位每页数量
+        categoryPageCount: 4,
+        // 当前所在页数
+        categoryPageActive: 0,
+        // 拖动起始位置
+        dragStartX: 0,
+        // 向左滑动
+        dragLeft: false
       },
       examList: []
     }
   },
   computed: {
+    categoryTabsAttr () {
+      console.log(this.categoryField.categories)
+      const pageCount = Math.ceil(this.categoryField.categories.length / this.categoryField.categoryPageCount)
+      const itemWidth = 100 / (pageCount * this.categoryField.categoryPageCount)
 
+      return {
+        overrideStyle: `width:${pageCount * 100}%`,
+        itemStyle: `width:${itemWidth}%`,
+        sliderStyle: `transform: translateX(-${this.categoryField.categoryPageActive * itemWidth * this.categoryField.categoryPageCount}%)`,
+        pageCount: pageCount
+      }
+    }
   },
 
   methods: {
+    startDrag (event) {
+      this.categoryField.dragStartX = event.clientX
+    },
+    drag (event) {
+      const dragDistance = event.clientX - this.categoryField.dragStartX
+      const dragLeft = dragDistance < 0
+      this.categoryField.dragLeft = dragLeft
+    },
+    dragEnd () {
+      if (this.categoryField.dragLeft) {
+        this.categoryField.categoryPageActive = Math.min(this.categoryField.categoryPageActive + 1, this.categoryTabsAttr.pageCount - 1)
+      } else {
+        this.categoryField.categoryPageActive = Math.max(this.categoryField.categoryPageActive - 1, 0)
+      }
+    },
     fetchBannerExam () {
       http.post('/exam/banner', {}).then((response) => {
         this.examList = response.data.map((v) => ({ ...v, begintime: commonTool.formatDate(new Date(v.begintime)), endtime: commonTool.formatDate(new Date(v.endtime)) }))
@@ -65,17 +113,21 @@ export default {
     toQuestion (row) {
       this.$router.push({path: '/pages/prepareEnter/main', query: row})
     },
-    toStartExam () {
-      const userInfo = http.getUserInfo()
-      const params = { userId: userInfo.userId }
-      http.post('/exam/random', params).then((response) => {
-        const examInfo = response.data
-        this.$router.replace({path: '/pages/startExam/main', query: examInfo})
+    toRandomExercise (row) {
+      this.$router.push({path: '/pages/randomExercise/main', query: row})
+    },
+    initPage () {
+      http.wxlogin()
+      this.initCategory()
+    },
+    initCategory () {
+      http.post('/question/category', {}).then((response) => {
+        this.categoryField.categories = response.data
       })
     }
   },
   created () {
-    http.wxlogin()
+    this.initPage()
   },
   mounted () {
     this.fetchBannerExam()
@@ -101,33 +153,141 @@ export default {
   padding: 14px 16px;
 }
 .list-inner {
-  padding: 14px 16px;
-  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
 }
 .list-table {
   display: flex;
   align-items: center;
+  margin: 10px;
 }
 .list-img {
   width: 48px;
   height: 72px;
 }
-.list-info {
-  margin-left: 15px;
-  width: 80%;
+
+.content-container {
+  margin-left: 10px;
+  flex: 1;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
-.list-info .title {
+
+.content-container .title {
   color: #333;
-  font-size: 16px;
-  line-height: 36px;
+  font-size: 18px;
+  font-weight: bold;
   
 }
-.list-info .time {
+
+.content-container .time {
   color: rgba(0, 0, 0, .45);
-  font-size: 12px;
-  line-height: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 14px;
+  line-height: 14px;
 }
+
+.arrow-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 100px;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+}
+
+
+.notice {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 20px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f8ecd2;;
+}
+
+.notice .icon {
+  width: 25px;
+  height: 16px;
+}
+
+.notice .text-container {
+  margin-left: 10px;
+  overflow: hidden;
+}
+
+.notice .text {
+  font-size: 13px;
+  white-space: nowrap;
+  color: #1296db;
+  animation: scrollText 10s linear infinite;
+}
+
+@keyframes scrollText {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.category-bar {
+  height: 75px;
+  margin: 10px;
+  position: relative;
+}
+
+.category-override {
+  width: 200%
+}
+
+.category-override .slider {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.category-override .category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 12.5%;
+}
+
+.category-override .category img {
+  width: 40px;
+  height: 40px;
+}
+
+.category-override .category span {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.page-indicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.page-indicator span {
+  width: 10px;
+  height: 10px;
+  background-color: #c1c1c1;
+  border-radius: 50%;
+  margin: 0 5px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.page-indicator span.active {
+  background-color: #000;
+}
+
 </style>

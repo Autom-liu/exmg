@@ -13,6 +13,12 @@ public class UserAnswer {
     private Integer id;
 
     /**
+     * 答题记录id
+     */
+    @Column(name = "`record_id`")
+    private Integer recordId;
+
+    /**
      * 用户
      */
     @Column(name = "`user_id`")
@@ -76,6 +82,24 @@ public class UserAnswer {
      */
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    /**
+     * 获取答题记录id
+     *
+     * @return record_id - 答题记录id
+     */
+    public Integer getRecordId() {
+        return recordId;
+    }
+
+    /**
+     * 设置答题记录id
+     *
+     * @param recordId 答题记录id
+     */
+    public void setRecordId(Integer recordId) {
+        this.recordId = recordId;
     }
 
     /**

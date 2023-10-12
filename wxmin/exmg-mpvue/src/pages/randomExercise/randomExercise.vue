@@ -2,23 +2,58 @@
   <div class="exam-container">
     <div class="exam-top">
       <div>{{pivotText}}</div>
-      <div><van-button plain type="primary" size="small" @click="onSubmit">交卷</van-button></div>
+      <div><van-button plain type="primary" size="small" @click="backIndex">返回</van-button></div>
     </div>
     <div class="exam-progress">
       <van-progress :pivot-text="pivotText" color="#1E90FF" :percentage="percentage" />
     </div>
     <div class="exam-question">
       <span class="exam-type">[{{currentType}}]</span>
-      <span class="question">{{currentQuestion}}</span>
+      <span class="question">{{currentQuestion.question}}</span>
     </div>
     <van-row v-if="currentPics">
       <van-image :src="currentPics" width="350" height="100" />
     </van-row>
-    <div class="option-wapper">
+    <div v-if="!mode" class="option-wapper">
       <div class="option-box">
-        <div class="option-item" v-for="(option, index) in options" :key="option.id">
+        <!-- 忽视报错,在小程序中需要这样的写法-->
+        <div class="option-item" v-for="(option, index) in options" :key="id">
           <van-checkbox :value="option.selected" checked-color="#07c160" @change="(event) => onChange(event, index)">{{option.option}}</van-checkbox>
         </div>
+        <van-button type="primary" size="large" @click="showInterpretation">查看解析</van-button>
+      </div>
+    </div>
+    <div v-if="mode" class="option-wapper-fix">
+      <div class="option-box">
+        <!-- 忽视报错,在小程序中需要这样的写法-->
+        <div :class="'option-item-fix ' + iconNames[option.right << 1 | option.selected]" v-for="option in options" :key="id">
+          <van-icon :name="iconNames[option.right << 1 | option.selected]" />
+          {{option.option}}
+        </div>
+      </div>
+    </div>
+    <div v-if="mode" class="cloumn-container">
+      <div class="column-box">
+        <div class="column-title">答案</div>
+        <div class="column-body">
+          <div class="content-left">正确答案：{{rightAnswerTxt}}</div>
+          <div class="content-right">你的答案：{{yourAnswerTxt}}</div>
+        </div>
+      </div>
+      <div class="column-box">
+        <div class="column-title">解析</div>
+        <div class="column-body">
+          <div class="content-left">{{currentQuestion.interpretation}}</div>
+        </div>
+      </div>
+      <div class="column-box">
+        <div class="column-title">知识点</div>
+        <div class="column-body">
+          <div class="content-left">{{category.msg}}</div>
+        </div>
+      </div>
+      <div class="column-box center">
+        题目有问题？联系反馈
       </div>
     </div>
     <div class="exam-bottom">
@@ -29,7 +64,8 @@
     </div>
     <van-action-sheet :show="answerSheet.show" title="答题卡" cancel-text="取消" @cancel="answerSheet.onClose" @close="answerSheet.onClose">
         <div class="answer-sheet">
-            <span v-for="(item, index) in questionData" :class="answerStatus[index] ? 'index-round index-active': 'index-round'" :key="item.id" @click="(event) => answerSheet.onClick(index)">{{index + 1}}</span>
+          <!-- 忽视报错,在小程序中需要这样的写法-->
+          <span v-for="(item, index) in questionData" :class="answerStatus[index] ? 'index-round index-active': 'index-round'" :key="id" @click="(event) => answerSheet.onClick(index)">{{index + 1}}</span>
         </div>
     </van-action-sheet>
     <van-toast id="van-toast" />
@@ -51,9 +87,10 @@ export default {
     return {
       started: false,
       checked: false,
+      // true-解析,false-正在答题
+      mode: false,
       answerStatus: [],
-      examInfo: {},
-      answerRecord: {},
+      category: {},
       questionData: [],
       currentIndex: 0,
       timestamp: 0,
@@ -74,7 +111,8 @@ export default {
       questionTypeDict: {
         1: '单选',
         2: '多选'
-      }
+      },
+      iconNames: ['circle', 'clear', 'info', 'checked']
     }
   },
   computed: {
@@ -86,7 +124,7 @@ export default {
     },
     currentQuestion () {
       if (this.questionData.length > this.currentIndex) {
-        return this.questionData[this.currentIndex].question
+        return this.questionData[this.currentIndex]
       } else {
         return ''
       }
@@ -118,6 +156,24 @@ export default {
       const minu = parseInt((timestamp - hour * 3600) / 60)
       const second = timestamp - hour * 3600 - minu * 60
       return `${tool.formatNumber(hour)}:${tool.formatNumber(minu)}:${tool.formatNumber(second)}`
+    },
+    rightAnswerTxt () {
+      const ops = [...this.options]
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+      for (let index = 0; index < ops.length; index++) {
+        ops[index].label = labels[index]
+      }
+      const retArr = ops.filter(t => t.right).map(p => p.label)
+      return retArr.join(',')
+    },
+    yourAnswerTxt () {
+      const ops = [...this.options]
+      const labels = ['A', 'B', 'C', 'D']
+      for (let index = 0; index < ops.length; index++) {
+        ops[index].label = labels[index]
+      }
+      const retArr = ops.filter(t => t.selected).map(p => p.label)
+      return retArr.join(',')
     }
   },
 
@@ -142,18 +198,17 @@ export default {
       }
     },
     fetchQuestions () {
-      if (this.examInfo.id) {
-        const user = http.getUserInfo()
-        const params = {examId: this.examInfo.id, userId: user.userId}
-        http.post('/question/startExam', params).then((response) => {
-          this.answerRecord = response.data.record
-          this.questionData = response.data.questionList
+      if (this.category.code) {
+        const params = {categoryId: this.category.code}
+        http.post('/question/random', params).then((response) => {
+          this.questionData = response.data
         })
       }
     },
     prev () {
       if (this.currentIndex > 0) {
         this.currentIndex--
+        this.mode = false
       } else {
         Toast('已经是第一题了')
       }
@@ -161,52 +216,37 @@ export default {
     next () {
       if (this.currentIndex < this.questionData.length - 1) {
         this.currentIndex++
+        this.mode = false
       } else {
         Toast('已经是最后一题了')
       }
     },
-    onSubmit () {
-      Dialog.confirm({ title: '标题', message: '确认交卷吗' }).then(() => {
-        Toast.loading({ message: '正在提交中...', forbidClick: true, duration: 0 })
-        this.finishExam()
-        const answerList = []
-        const user = http.getUserInfo()
-        let sorted = 0
-        for (const qstitem of this.questionData) {
-          for (const option of qstitem.options) {
-            answerList.push({ userId: user.userId, examId: this.examInfo.id, questionId: qstitem.questionId, optionId: option.id, selected: option.selected, sorted })
-          }
-          sorted++
-        }
-
-        const params = { userId: user.userId, examId: this.examInfo.id, recordId: this.answerRecord.id, answerList }
-        http.post('/question/submitAnswer', params).then((response) => {
-          const data = response.data
-          const query = { ...this.examInfo, ...user, ...data, timestamp: this.timestamp }
-          this.$router.replace({ path: '/pages/endExam/main', query })
-          Toast.clear()
-        })
-      }).catch(() => {
-
-      })
+    showInterpretation () {
+      this.mode = true
+    },
+    backIndex () {
+      this.$router.replace({ path: '/pages/index/main' })
     },
     startExam () {
       if (this.started) {
         return
       }
+      Dialog.confirm({ title: '随机练习模式', message: '你即将进入随机练习模式，该模式下可以随时查看解析,且答题不会被记录' })
+        .then(() => {
+          this.timer = setInterval(() => {
+            this.timestamp++
+          }, 1000)
+        })
       this.started = true
-      this.examInfo = this.$route.query
+      this.category = this.$route.query
       this.answerStatus = []
       this.questionData = []
       this.currentIndex = 0
-      this.timestamp = 0
       this.fetchQuestions()
-      this.timer = setInterval(() => {
-        this.timestamp++
-      }, 1000)
     },
     finishExam () {
       clearInterval(this.timer)
+      this.timestamp = 0
       this.started = false
     }
   },
@@ -284,5 +324,55 @@ export default {
 }
 .index-round.index-active {
   background-color: #1E90FF
+}
+
+
+.option-wapper-fix {
+  margin-top: 24px;
+}
+.option-item-fix {
+  margin: 12px 0;
+  padding: 12px 8px;
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.option-item-fix.checked {
+  border: 1px solid #e5ffe5;
+  background-color: #e5ffe5;
+  border-radius: 10px;
+  color: #00b300;
+}
+.option-item-fix.clear {
+  border: 1px solid #ffe5e5;
+  background-color: #ffe5e5;
+  border-radius: 10px;
+  color: #e60000;
+}
+.option-item-fix.info {
+  border: 1px solid #ffffcc;
+  background-color: #ffffcc;
+  border-radius: 10px;
+  color: #ffaa00;
+}
+.option-item-fix.circle {
+  border: 1px solid #b3b3b3;
+  border-radius: 10px;
+}
+
+.cloumn-container {
+  padding-bottom: 70px;
+}
+.column-box {
+  margin: 12px;
+}
+.column-box.center {
+  font-size: 12px;
+  text-align: center;
+}
+.column-box .column-title {
+  font-weight: bold;
+}
+.column-box .column-body {
+  font-size: 16px;
 }
 </style>

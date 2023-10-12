@@ -13,7 +13,7 @@ function handleError (err) {
   console.error(err)
 }
 
-const BASE_URL = 'http://127.0.0.1/api/exmg'
+const BASE_URL = 'http://47.106.8.65/api/exmg'
 const USER_KEY = 'CURRENT_USER'
 
 export default {

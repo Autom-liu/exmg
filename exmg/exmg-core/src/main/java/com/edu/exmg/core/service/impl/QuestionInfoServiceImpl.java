@@ -3,13 +3,13 @@ package com.edu.exmg.core.service.impl;
 import java.util.*;
 
 import com.edu.exmg.common.util.ConverterUtils;
-import com.edu.exmg.common.util.StringUtils;
+import com.edu.exmg.common.util.EnumUtils;
 import com.edu.exmg.common.vo.IResult;
 import com.edu.exmg.common.vo.Result;
 import com.edu.exmg.core.bean.*;
-import com.edu.exmg.core.dto.ExamQuestionDTO;
 import com.edu.exmg.core.dto.OptionInfoDTO;
 import com.edu.exmg.core.dto.UserAnswerDTO;
+import com.edu.exmg.core.enums.AnswerModeEnums;
 import com.edu.exmg.core.mapper.*;
 import com.edu.exmg.core.query.ExamQuestionQuery;
 import com.edu.exmg.core.vo.ConvergeAnswerVO;
@@ -139,35 +139,74 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 
 	@Override
 	public List<ExamQuestionVO> queryAllQuestionWithUnknownOption(ExamQuestionQuery query) {
-		return queryAllQuestionWithOption(query, false);
-	}
-
-	@Override
-	public List<ExamQuestionVO> queryUserAnswerDetail(ExamQuestionQuery query) {
-		return queryAllQuestionWithOption(query, true);
-	}
-
-	public List<ExamQuestionVO> queryAllQuestionWithOption(ExamQuestionQuery query, boolean showRight) {
 		List<Integer> questionIds = queryQuestionIds(query);
 		query.setQuestionIds(questionIds);
-		List<ExamQuestionVO> result;
-		Map<Integer, Integer> orderMap = orderQuestionMap(questionIds);
-		if (showRight) {
-			result = questionInfoExtMapper.questionUnionUserOption(query);
-		} else {
-			result = questionInfoExtMapper.questionUnionOption(query);
+		List<ExamQuestionVO> result = queryAllQuestionWithOption(query, false);
+		ExamInfo examInfo = examInfoMapper.selectByPrimaryKey(query.getExamId());
+		if (examInfo == null) {
+			return new ArrayList<>();
 		}
+		Integer answerMode = examInfo.getAnswerMode();
+		Optional<AnswerModeEnums> answerModeEnumsOp = EnumUtils.getEnumByCode(answerMode, AnswerModeEnums.values());
+		if (answerModeEnumsOp.isPresent()) {
+			AnswerModeEnums answerModeEnums = answerModeEnumsOp.get();
+			return answerModeEnums.shuffleExamQuestion(result);
+		} else {
+			return result;
+		}
+	}
+
+
+	/**
+	 * 练习模式下随机选取题目并展示答案
+	 * @param query
+	 * @return
+	 */
+	@Override
+	public List<ExamQuestionVO> queryAllQuestionWithKnownOption(QuestionInfoQuery query) {
+		List<Integer> questionIds = randomQuestionIds(query);
+		// 标记题目顺序
+		Map<Integer, Integer> orderMap = orderQuestionMap(questionIds);
+
+		ExamQuestionQuery eqQuery = new ExamQuestionQuery();
+		eqQuery.setQuestionIds(questionIds);
+		List<ExamQuestionVO> result = queryAllQuestionWithOption(eqQuery, true);
+
+		// 整理序号
 		for (ExamQuestionVO questionVO : result) {
 			questionVO.setSorted(orderMap.get(questionVO.getQuestionId()));
-			questionVO.setExamId(query.getExamId());
 		}
+		// 查询结果排序
 		result.sort(Comparator.comparingInt(ExamQuestionVO::getSorted));
 		return result;
 	}
 
-	private List<Integer> queryQuestionIds(ExamQuestionQuery query) {
-		List<Integer> questionIds = questionInfoExtMapper.examQuestionIds(query.getExamId());
-		return questionIds;
+	public List<ExamQuestionVO> queryAllQuestionWithOption(ExamQuestionQuery query, boolean showRight) {
+		List<Integer> questionIds = query.getQuestionIds();
+		List<ExamQuestionVO> result = questionInfoExtMapper.questionUnionOption(query);
+		Map<Integer, Integer> orderMap = orderQuestionMap(questionIds);
+		for (ExamQuestionVO questionVO : result) {
+			questionVO.setSorted(orderMap.get(questionVO.getQuestionId()));
+			questionVO.setExamId(query.getExamId());
+			if (!showRight) {
+				questionVO.setInterpretation(null);
+				List<OptionInfo> options = questionVO.getOptions();
+				for (OptionInfo option : options) {
+					option.setRight(null);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<ExamQuestionVO> queryUserAnswerDetail(ExamQuestionQuery query) {
+		List<Integer> questionIds = queryQuestionIds(query);
+		query.setQuestionIds(questionIds);
+		List<ExamQuestionVO> result = questionInfoExtMapper.questionUnionUserOption(query);
+
+		result.sort(Comparator.comparingInt(ExamQuestionVO::getSorted));
+		return result;
 	}
 
 	/**
@@ -177,19 +216,7 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 	 */
 	@Override
 	public List<ExamQuestionVO> randomQuestion(QuestionInfoQuery query) {
-		// 查所有题目信息
-		List<Integer> questionIds = questionInfoExtMapper.questionInfoIds(query);
-		Integer limit = query.getPageSize();
-		List<Integer> randomIds = new ArrayList<>();
-		Set<Integer> visited = new HashSet<>();
-		// TODO 随机挑选limit个题目
-		while (randomIds.size() < limit) {
-			int index = RandomUtils.nextInt(0, questionIds.size());
-			if (!visited.contains(index)) {
-				visited.add(index);
-				randomIds.add(questionIds.get(index));
-			}
-		}
+		List<Integer> randomIds = randomQuestionIds(query);
 		// 标记题目顺序
 		Map<Integer, Integer> orderMap = orderQuestionMap(randomIds);
 		ExamQuestionQuery eqQuery = query.toExamQuestionQuery();
@@ -204,6 +231,38 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 		result.sort(Comparator.comparingInt(ExamQuestionVO::getSorted));
 
 		return result;
+	}
+
+	/**
+	 * 随机选取题目id
+	 * @param query
+	 * @return
+	 */
+	private List<Integer> randomQuestionIds(QuestionInfoQuery query) {
+		// 查所有题目信息
+		List<Integer> questionIds = questionInfoExtMapper.questionInfoIds(query);
+		Integer limit = Math.min(query.getPageSize(), questionIds.size());
+		List<Integer> randomIds = new ArrayList<>();
+		Set<Integer> visited = new HashSet<>();
+		// TODO 随机挑选limit个题目
+		while (randomIds.size() < limit) {
+			int index = RandomUtils.nextInt(0, questionIds.size());
+			if (!visited.contains(index)) {
+				visited.add(index);
+				randomIds.add(questionIds.get(index));
+			}
+		}
+		return randomIds;
+	}
+
+	/**
+	 * 根据examId查questionId列表
+	 * @param query
+	 * @return
+	 */
+	private List<Integer> queryQuestionIds(ExamQuestionQuery query) {
+		List<Integer> questionIds = questionInfoExtMapper.examQuestionIds(query.getExamId());
+		return questionIds;
 	}
 
 	/**
@@ -222,14 +281,15 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 
 	@Override
 	@Transactional
-	public IResult submitUserAnswer(Integer examId, String userId, List<UserAnswerDTO> userAnswers) {
+	public IResult submitUserAnswer(Integer examId, String userId, Integer recordId, List<UserAnswerDTO> userAnswers) {
 		UserAnswerExample example = new UserAnswerExample();
-		example.createCriteria().andUserIdEqualTo(userId).andExamIdEqualTo(examId);
+		example.createCriteria().andUserIdEqualTo(userId).andExamIdEqualTo(examId).andRecordIdEqualTo(recordId);
 		userAnswerMapper.deleteByExample(example);
 
 		for (UserAnswerDTO userAnswer : userAnswers) {
 			Integer optionId = userAnswer.getOptionId();
 			UserAnswer bean = ConverterUtils.copyBean(userAnswer, UserAnswer.class);
+			bean.setRecordId(recordId);
 			OptionInfo optionInfo = optionInfoMapper.selectByPrimaryKey(optionId);
 			bean.setRight(userAnswer.selectedRight(optionInfo.getRight()));
 			userAnswerMapper.insertSelective(bean);
@@ -238,11 +298,12 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 	}
 
 	@Override
-	public ConvergeAnswerVO simpleConverge(Integer examId, String userId) {
+	public ConvergeAnswerVO simpleConverge(Integer examId, String userId, Integer recordId) {
 		ConvergeAnswerVO convergeAnswer = new ConvergeAnswerVO();
 		ExamQuestionQuery query = new ExamQuestionQuery();
 		query.setUserId(userId);
 		query.setExamId(examId);
+		query.setRecordId(recordId);
 
 		List<ConvergeAnswerVO> convergeList = questionInfoExtMapper.convergeAnswerResult(query);
 		Integer rightNum = 0;
@@ -295,4 +356,8 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 		return pageVO.getData();
 	}
 
+	@Override
+	public long countByCriteria(QuestionInfoExample example) {
+		return questionInfoMapper.countByExample(example);
+	}
 }

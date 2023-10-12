@@ -12,6 +12,8 @@ public class UserAnswerSubmitDTO {
 
     private String userId;
 
+    private Integer recordId;
+
     private List<UserAnswerDTO> answerList;
 
 }

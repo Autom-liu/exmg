@@ -59,6 +59,8 @@ public enum ExamCategoryEnums implements BaseIntegerBizEnum {
 
     private boolean top;
 
+    private String icon;
+
     ExamCategoryEnums(Integer code, String msg, Integer parentId) {
         this(code, msg, parentId, false);
     }
@@ -68,6 +70,7 @@ public enum ExamCategoryEnums implements BaseIntegerBizEnum {
         this.msg = msg;
         this.parentId = parentId;
         this.top = top;
+        this.icon = "database.png";
     }
     
     
@@ -88,5 +91,9 @@ public enum ExamCategoryEnums implements BaseIntegerBizEnum {
 
     public boolean isTop() {
         return top;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 }

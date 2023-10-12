@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ConvergeAnswerVO {
 
-    private String questionId;
+    private Integer recordId;
 
     private Integer rightNum;
 

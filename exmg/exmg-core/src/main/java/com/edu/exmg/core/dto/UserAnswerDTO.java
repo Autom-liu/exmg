@@ -18,6 +18,8 @@ public class UserAnswerDTO implements Serializable {
     private Integer questionId;
 
     private Integer optionId;
+
+    private Integer sorted;
     
     private String answer;
 

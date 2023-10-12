@@ -6,6 +6,7 @@
     "pages/prepareEnter/main",
     "pages/startExam/main",
     "pages/endExam/main",
+    "pages/randomExercise/main",
     "pages/userAnswerList/main",
     "pages/userAnswerDetail/main"
     
