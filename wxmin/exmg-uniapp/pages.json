@@ -1,0 +1,57 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/main",
+			"style": {
+				"navigationBarTitleText": "Apricity EXMG"
+			}
+		},
+		{"path": "pages/user/main"},
+		{"path": "pages/adminInfo/main"},
+		{"path": "pages/prepareEnter/main"},
+		{"path": "pages/startExam/main"},
+		{"path": "pages/endExam/main"},
+		{"path": "pages/randomExercise/main"},
+		{"path": "pages/userAnswerList/main"},
+		{"path": "pages/userAnswerDetail/main"}
+	],
+	"globalStyle": {
+	  "backgroundTextStyle": "light",
+	  "navigationBarBackgroundColor": "#fff",
+	  "navigationBarTitleText": "Apricity EXMG",
+	  "navigationBarTextStyle": "black",
+	  "backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"borderStyle": "black",
+		"list": [
+			{
+				"selectedIconPath": "static/images/home-active.png",
+				"iconPath": "static/images/home.png",
+				"pagePath": "pages/index/main",
+				"text": "首页"
+			},
+			{
+				"selectedIconPath": "static/images/search-active.png",
+				"iconPath": "static/images/search.png",
+				"pagePath": "pages/index/main",
+				"text": "数据"
+			},
+			{
+				"selectedIconPath": "static/images/setting-active.png",
+				"iconPath": "static/images/setting.png",
+				"pagePath": "pages/index/main",
+				"text": "题库"
+			},
+			{
+				"selectedIconPath": "static/images/user-active.png",
+				"iconPath": "static/images/user.png",
+				"pagePath": "pages/user/main",
+				"text": "我的"
+			}
+		]
+	},
+	"usingComponents": {
+	},
+	"uniIdRouter": {}
+}

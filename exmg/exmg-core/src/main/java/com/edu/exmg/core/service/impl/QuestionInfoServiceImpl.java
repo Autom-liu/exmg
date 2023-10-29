@@ -178,6 +178,7 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 		}
 		// 查询结果排序
 		result.sort(Comparator.comparingInt(ExamQuestionVO::getSorted));
+		AnswerModeEnums.SHUFFLE_OPTIONS.shuffleExamQuestion(result);
 		return result;
 	}
 
@@ -193,6 +194,7 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 				List<OptionInfo> options = questionVO.getOptions();
 				for (OptionInfo option : options) {
 					option.setRight(null);
+					option.setInterpretation(null);
 				}
 			}
 		}

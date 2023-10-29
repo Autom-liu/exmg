@@ -98,6 +98,7 @@
       <result property="questionId" column="question_id"></result>
       <result property="optionType" column="option_type"></result>
       <result property="right" column="option_right"></result>
+      <result property="interpretation" column="option_interpretation"></result>
       <result property="status" column="user_right"></result>
     </collection>
   </resultMap>
@@ -121,7 +122,7 @@
 
   <select id="questionUnionOption" resultMap="QuestionOptionsMap">
     select qi.id qid, qi.question, qi.pics_url, qi.question_type, qi.top_category, qi.category_id, qi.interpretation, qi.pics_url,
-      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right
+      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right, oi.interpretation option_interpretation
     from question_info qi left join option_info oi on qi.id = oi.question_id
     <where>
       <foreach collection="questionIds" item="qid" separator="," open="qi.id in (" close=")">
