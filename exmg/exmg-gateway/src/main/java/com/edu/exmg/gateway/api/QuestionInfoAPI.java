@@ -6,17 +6,16 @@ import com.edu.exmg.common.vo.IResult;
 import com.edu.exmg.common.vo.Result;
 import com.edu.exmg.common.vo.ResultList;
 import com.edu.exmg.core.bean.AnswerRecord;
+import com.edu.exmg.core.bean.AnswerRecordExample;
 import com.edu.exmg.core.bean.QuestionInfoExample;
 import com.edu.exmg.core.dto.QuestionInfoDTO;
 import com.edu.exmg.core.enums.ExamCategoryEnums;
 import com.edu.exmg.core.mapper.AnswerRecordMapper;
 import com.edu.exmg.core.query.ExamQuestionQuery;
 import com.edu.exmg.core.query.QuestionInfoQuery;
+import com.edu.exmg.core.service.ExamInfoService;
 import com.edu.exmg.core.service.QuestionInfoService;
-import com.edu.exmg.core.vo.AnswerRecordVO;
-import com.edu.exmg.core.vo.ConvergeAnswerVO;
-import com.edu.exmg.core.vo.ExamQuestionVO;
-import com.edu.exmg.core.vo.QuestionInfoVO;
+import com.edu.exmg.core.vo.*;
 import com.edu.exmg.gateway.dto.UserAnswerSubmitDTO;
 import com.edu.exmg.gateway.enums.ErrorEnums;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author autom
@@ -39,6 +36,8 @@ import java.util.List;
 @RequestMapping("question")
 public class QuestionInfoAPI {
 
+    @Autowired
+    private ExamInfoService examInfoService;
     @Autowired
     private QuestionInfoService questionInfoService;
 
@@ -116,12 +115,48 @@ public class QuestionInfoAPI {
         return Result.success(convergeAnswer);
     }
 
+    @PostMapping("user/answer/record")
+    public IResult answerRecord(@RequestBody ExamQuestionQuery query) throws BizException {
+
+        Integer examId = query.getExamId();
+        String userId = query.getUserId();
+        Integer recordId = query.getRecordId();
+        if (examId == null && recordId == null && StringUtils.isBlank(userId)) {
+            return IResult.error(ErrorEnums.ERRCODE_0001, "examId,userId,recordId");
+        }
+
+        AnswerRecordExample example = new AnswerRecordExample();
+        example.createCriteria().andIdEqualTo(query.getRecordId())
+                .andUserIdEqualTo(query.getUserId())
+                .andExamIdEqualTo(query.getExamId())
+                .andEndTimeIsNotNull();
+
+        List<AnswerRecord> answerRecords = answerRecordMapper.selectByExample(example);
+        List<AnswerRecordVO> resultList = new ArrayList<>();
+        Map<Integer, ExamInfoVO> examMap = new HashMap<>();
+        for (AnswerRecord answerRecord : answerRecords) {
+            AnswerRecordVO answerRecordVO = new AnswerRecordVO();
+            if (examMap.containsKey(answerRecord.getExamId())) {
+                answerRecordVO.setExamInfo(examMap.get(answerRecord.getExamId()));
+            } else {
+                ExamInfoVO examInfo = examInfoService.findOne(answerRecord.getExamId());
+                answerRecordVO.setExamInfo(examInfo);
+                examMap.put(answerRecord.getExamId(), examInfo);
+            }
+            answerRecordVO.setRecord(answerRecord);
+            resultList.add(answerRecordVO);
+        }
+
+        return ResultList.success(resultList);
+    }
+
     @PostMapping("user/answer/detail")
     public IResult userAnswerDetail(@RequestBody ExamQuestionQuery query) {
         Integer examId = query.getExamId();
         String userId = query.getUserId();
-        if (examId == null || StringUtils.isBlank(userId)) {
-            return IResult.error(ErrorEnums.ERRCODE_0001, "examId,userId");
+        Integer recordId = query.getRecordId();
+        if (examId == null || recordId == null || StringUtils.isBlank(userId)) {
+            return IResult.error(ErrorEnums.ERRCODE_0001, "examId,userId,recordId");
         }
         List<ExamQuestionVO> result = questionInfoService.queryUserAnswerDetail(query);
         return ResultList.success(result);

@@ -33,6 +33,8 @@
           <el-switch v-model="form.common" active-text="贡献为公共题目" inactive-text="" />
         </el-form-item>
         <el-form-item label="题目配图">
+          <el-input v-model="form.picsUrl" />
+          <!-- 暂时作废上传
           <el-upload
             :action="`${BASE_URL}/admin/config/savetofile`"
             accept="image/*"
@@ -47,7 +49,7 @@
           >
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">图片尺寸控制在300*300,大小不超过1MB,上传后请点击预览确认图片是否上传地址是否有效</div>
-          </el-upload>
+          </el-upload> -->
         </el-form-item>
         <el-form-item v-for="(item, index) in form.options" :key="index" :label="`选项${index}`">
           <el-col :span="8">
@@ -107,7 +109,7 @@ export default {
         topCategory: 1,
         categoryId: 101,
         interpretation: 1,
-        picsUrl: [],
+        picsUrl: '',
         common: true,
         options: [
           {
@@ -163,7 +165,7 @@ export default {
         topCategoryEnums: this.topCategoryEnums,
         children: [],
         init: () => {
-          this.categoryField.onTopChange(1)
+          this.categoryField.onTopChange(this.form.topCategory)
         },
         onTopChange: (id) => {
           const getCategoryByParentId = this.$store.getters['dataDict/getCategoryByParentId']
@@ -171,7 +173,7 @@ export default {
           this.categoryField.children = children
           if (Object.keys(children).length > 0) {
             const chr = Object.keys(children)
-            this.form.categoryId = Number(chr[0])
+            // this.form.categoryId = Number(chr[0])
           }
         }
       }
@@ -196,7 +198,6 @@ export default {
   created() {
     this.initPage()
     this.categoryField.init()
-    this.fileField.init()
   },
   methods: {
     initPage() {
@@ -229,7 +230,7 @@ export default {
       this.form.picsUrl = fileList.map((item) => item.response.data)
     },
     onSubmit() {
-      this.submitAction(this.submitForm).then((response) => {
+      this.submitAction(this.form).then((response) => {
         if (response.code === '0000') {
           this.returnBackPage()
         }

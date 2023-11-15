@@ -3,6 +3,9 @@
     <div class="exam-question">
       <span class="question">{{currentQuestion.question}}</span>
     </div>
+	<view v-if="currentQuestion.picsUrl">
+	  <image :src="currentQuestion.picsUrl" mode="widthFix"  />
+	</view>
     <div class="option-wapper">
       <div class="option-box">
         <div :class="'option-item ' + iconNames[option.right << 1 | option.status]" v-for="option in options" :key="option.id">
@@ -40,8 +43,11 @@
       <button type="primary" size="mini" @click="prev">上一题</button>
       <button type="primary" size="mini" @click="next">下一题</button>
     </div>
-    <van-toast id="van-toast" />
-    <van-dialog id="van-dialog" />
+    <view>
+    	<uni-popup ref="message" type="message">
+    		<uni-popup-message type="warn" :message="messageText" :duration="2000"></uni-popup-message>
+    	</uni-popup>
+    </view>
   </div>
 
 </template>
@@ -63,7 +69,8 @@ export default {
        */
       iconNames: ['clear', 'circle', 'info', 'checked'],
       questionData: [],
-      currentIndex: 0
+      currentIndex: 0,
+	  messageText: ''
     }
   },
   computed: {
@@ -105,25 +112,26 @@ export default {
       if (this.currentIndex > 0) {
         this.currentIndex--
       } else {
-        Toast('已经是第一题了')
+        this.Toast('已经是第一题了')
       }
     },
     next () {
       if (this.currentIndex < this.questionData.length - 1) {
         this.currentIndex++
       } else {
-        Toast('已经是最后一题了')
+        this.Toast('已经是最后一题了')
       }
     },
+	Toast(message) {
+		this.messageText = message
+	   this.$refs.message.open()
+	},
     backIndex () {
-		uni.switchTab({
-			url:'/pages/index/main'
-		})
+		uni.switchTab({ url:'/pages/index/main' })
     }
   },
-  mounted () {
-    const { id, userId, recordId } = this.$route.query
-    const params = { examId: id, userId, recordId }
+  onLoad (option) {
+    const params = JSON.parse(option.query)
     this.currentIndex = 0
     http.post('/question/user/answer/detail', params).then((response) => {
       console.log(response)

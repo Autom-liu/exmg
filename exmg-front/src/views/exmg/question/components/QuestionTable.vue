@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column v-if="!selection" prop="picsUrl" label="图片" width="120">
         <template slot-scope="scope">
-          <el-image style="width: 100px; height: 100px" :src="scope.row.picsUrl.split(',')[0]" :preview-src-list="scope.row.picsUrl.split(',')" />
+          <el-image style="width: 100px; height: 100px" :src="scope.row.picsUrl" :preview-src-list="[scope.row.picsUrl]" />
         </template>
       </el-table-column>
       <el-table-column v-if="!selection" prop="options" label="选项" width="80">

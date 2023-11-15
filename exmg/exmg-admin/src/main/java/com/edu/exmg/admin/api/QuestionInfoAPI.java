@@ -223,7 +223,7 @@ public class QuestionInfoAPI {
                 questionInfoDTO.setDifficulty(importQuestion.getDifficulty());
                 questionInfoDTO.setTopCategory(importQuestion.getTopCategory());
                 questionInfoDTO.setCategoryId(importQuestion.getCategoryId());
-                questionInfoDTO.setPicsUrl("");
+                questionInfoDTO.setPicsUrl(importQuestion.getPicsUrl());
                 questionInfoDTO.setCommon(importQuestion.getCommon());
                 String[] importOptions = new String[] { importQuestion.getOption0(), importQuestion.getOption1(), importQuestion.getOption2(),
                         importQuestion.getOption3(), importQuestion.getOption4(), importQuestion.getOption5(), importQuestion.getOption6(),

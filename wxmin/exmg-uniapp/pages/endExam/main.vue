@@ -1,43 +1,41 @@
 <template>
-  <div class="container-wrapper">
-    <div class="container-top">
-        <div class="title">{{resultData.examName}}</div>
-        <div class="number">共{{resultData.totalNum}}题</div>
-        <div class="score">{{resultData.totalScore}}分</div>
-    </div>
-    <div class="container-middle">
-        <div class="blocks">
-            <div class="block">
-                <div>{{resultData.rightNum}}</div>
-                <div>答对</div>
-            </div>
-            <div class="block red">
-                <div>{{resultData.wrongNum}}</div>
-                <div>答错</div>
-            </div>
-            <div class="block">
-                <div>{{rightRate}}%</div>
-                <div>正确率</div>
-            </div>
-        </div>
-        <div class="infos">用时 {{formatTimeTxt}}</div>
-    </div>
-    <div class="container-end">
-        <div class="btn-box">
-          <van-button type="primary" block @click="toDetail">查看答案与解析</van-button>
-        </div>
-        <div class="btn-box">
-          <van-button type="info" block @click="backAgain">再答一次</van-button>
-        </div>
-        <div class="btn-box">
-          <van-button type="danger" block @click="backIndex">返回首页</van-button>
-        </div>
-    </div>
-  </div>
+  <view class="container-wrapper">
+    <view class="container-top">
+        <view class="title">{{resultData.examName}}</view>
+        <view class="number">共{{resultData.totalNum}}题</view>
+        <view class="score">{{resultData.totalScore * rightRate / 100}}分</view>
+    </view>
+    <view class="container-middle">
+        <view class="blocks">
+            <view class="block">
+                <view>{{resultData.rightNum}}</view>
+                <view>答对</view>
+            </view>
+            <view class="block red">
+                <view>{{resultData.wrongNum}}</view>
+                <view>答错</view>
+            </view>
+            <view class="block">
+                <view>{{rightRate}}%</view>
+                <view>正确率</view>
+            </view>
+        </view>
+        <view class="infos">用时 {{formatTimeTxt}}</view>
+    </view>
+    <view class="container-end">
+        <view class="btn-box">
+          <button size="default" type="primary" class="btn" @click="toDetail">查看答案与解析</button>
+        </view>
+        <view class="btn-box">
+          <button size="default" type="primary" class="btn" @click="backIndex">返回首页</button>
+        </view>
+    </view>
+  </view>
 </template>
 
 <script>
 import tool from '@/utils/index'
+import http from '@/utils/request'
 
 export default {
   components: {
@@ -45,7 +43,15 @@ export default {
   },
   data () {
     return {
-      resultData: {}
+      resultData: {
+		  examName: '',
+		  totalNum: 0,
+		  totalScore: 0,
+		  rightNum: 0,
+		  wrongNum: 0,
+		  timestamp: 0
+	  },
+	  query: {},
     }
   },
   computed: {
@@ -53,7 +59,7 @@ export default {
       return parseInt(this.resultData.rightNum / this.resultData.totalNum * 100)
     },
     formatTimeTxt () {
-      const timestamp = this.resultData.timestamp
+      const timestamp = this.resultData.timestamp / 1000
       const hour = parseInt(timestamp / 3600)
       const minu = parseInt((timestamp - hour * 3600) / 60)
       const second = timestamp - hour * 3600 - minu * 60
@@ -63,23 +69,31 @@ export default {
 
   methods: {
     backIndex () {
-      this.$router.replace({ path: '/pages/index/main' })
-    },
-    backAgain () {
-      const { id, examName, examRemark, begintime, endtime } = this.resultData
-      const examInfo = { id, examName, examRemark, begintime, endtime }
-      this.$router.replace({ path: '/pages/prepareEnter/main', query: examInfo })
+      uni.switchTab({ url: '/pages/index/main'})
     },
     toDetail () {
-      this.$router.replace({ path: '/pages/userAnswerDetail/main', query: this.resultData })
+      // this.$router.replace({ path: '/pages/userAnswerDetail/main', query: this.resultData })
+	  uni.navigateTo({url:`/pages/userAnswerDetail/main?query=${JSON.stringify(this.query)}`})
     }
   },
   created () {
 
   },
+  onLoad (option) {
+    this.query = JSON.parse(option.query)
+	http.post('/question/user/answer/record', this.query).then((response) => {
+	  const record = response.data[0].record
+	  const examInfo = response.data[0].examInfo
+	  this.resultData.timestamp = record.endTime - record.startTime
+	  this.resultData.rightNum = record.rightNum
+	  this.resultData.totalNum = record.totalNum
+	  this.resultData.wrongNum = record.totalNum - record.rightNum
+	  this.resultData.totalScore = examInfo.totalScore
+	  this.resultData.examName = examInfo.examName
+	})
+  },
   mounted () {
-    this.resultData = this.$route.query
-    console.log(this.resultData)
+    
   }
 }
 </script>

@@ -1,17 +1,23 @@
 <template>
-  <div class="btn-wrapper" @click="closeRemark">
-    <div class="btn-box">
-        <div class="btn-item"><van-button round block color="linear-gradient(to right, #FF4500, #DC143C)" @click="toStartExam">开始答题</van-button></div>
-        <div class="btn-item"><van-button round block color="linear-gradient(to right, #FF4500, #DC143C)">查看排名</van-button></div>
-        <div class="btn-item"><van-button round block color="linear-gradient(to right, #FF4500, #DC143C)" @click.stop="showRemark">考试说明</van-button></div>
-    </div>
-    <div class="exam-remark" v-show="remarkShow">
-        <van-row>考试名称: {{examInfo.examName}}</van-row>
-        <van-row>考试说明: {{examInfo.examRemark}}</van-row>
-        <van-row>开始时间: {{examInfo.begintime}}</van-row>
-        <van-row>截止时间: {{examInfo.endtime}}</van-row>
-    </div>
-  </div>
+  <view class="btn-wrapper" @click="closeRemark">
+    <view class="btn-box">
+        <view class="btn-item">
+			<button size="default" type="default" class="btn" @click="toStartExam">开始答题</button>
+		</view>
+		<view class="btn-item">
+			<button size="default" type="default" class="btn" @click.stop="toAnswerList">查看历史答题记录</button>
+		</view>
+        <view class="btn-item">
+			<button size="default" type="default" class="btn" @click.stop="showRemark">考试说明</button>
+		</view>
+    </view>
+    <view class="exam-remark" v-show="remarkShow">
+        <view>考试名称: {{examInfo.examName}}</view>
+        <view>考试说明: {{examInfo.examRemark}}</view>
+        <view>开始时间: {{examInfo.begintime}}</view>
+        <view>截止时间: {{examInfo.endtime}}</view>
+    </view>
+  </view>
 </template>
 
 <script>
@@ -38,14 +44,16 @@ export default {
       this.remarkShow = false
     },
     toStartExam () {
-      this.$router.replace({path: '/pages/startExam/main', query: this.examInfo})
-    }
+	  uni.navigateTo({
+		url:`/pages/startExam/main?query=${JSON.stringify(this.examInfo)}`
+	  })
+    },
+	toAnswerList() {
+		uni.navigateTo({ url:`/pages/userAnswerList/main?query=${JSON.stringify({examId:this.examInfo.id})}`})
+	}
   },
-  created () {
-
-  },
-  mounted () {
-    this.examInfo = this.$route.query
+  onLoad (route) {
+	this.examInfo = JSON.parse(route.query)
   }
 }
 </script>
@@ -60,7 +68,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.huabanimg.com%2Fc61f9c3075d166e70f4671bb6b16e23bed45383c42587-dZTcSs_fw658&refer=http%3A%2F%2Fhbimg.huabanimg.com&app=2002&size=f300,500&q=a80&n=0&g=0n&fmt=jpeg');
+    background-image: url('https://img2.baidu.com/it/u=1155746535,60905048&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889');
     background-size: cover;
 }
 .btn-box {
@@ -71,6 +79,10 @@ export default {
     font-size: 16px;
     font-weight: 600;
     margin: 16px 0;
+}
+.btn-item .btn {
+	background-color: #ff8d00;
+	color: #f5f5f5;
 }
 .exam-remark {
     position: absolute;

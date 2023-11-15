@@ -5,9 +5,19 @@
         <el-form-item label="题目名称">
           <el-input v-model="query.questionName" />
         </el-form-item>
+        <el-form-item label="题目id">
+          <el-input v-model="query.id" />
+        </el-form-item>
+        <el-form-item label="题目分类">
+          <el-input v-model="query.categoryId" />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="initData">查询</el-button>
         </el-form-item>
+      </el-form>
+    </el-header>
+    <el-header>
+      <el-form :inline="true" class="demo-form-inline">
         <el-form-item>
           <el-button-group>
             <el-button type="primary" icon="el-icon-plus" @click="toAdd">添加题目</el-button>
@@ -47,7 +57,8 @@ export default {
   data() {
     return {
       query: {
-        questionName: ''
+        questionName: '',
+        currentPage: 1
       },
       qstTable: {
         selectedRows: []
@@ -94,6 +105,7 @@ export default {
       this.$router.replace({ name: 'AssignExam', params: { questions: this.qstTable.selectedRows }})
     },
     initData() {
+      this.query.currentPage = 1
       this.refresh = !this.refresh
     },
     onQuestionTableClick(rows) {

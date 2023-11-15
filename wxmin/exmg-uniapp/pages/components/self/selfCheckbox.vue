@@ -1,8 +1,8 @@
 <template>
   <view class="van-checkbox" @click="toggleCheckbox">
     <view class="checkbox-box" :class="{ 'checked': value }">
-      <uni-icons v-if="value" type="checkmarkempty" :color="checkedColor" size="20"></uni-icons>
-	  <uni-icons v-else type="smallcircle-filled" size="32"></uni-icons>
+      <uni-icons v-if="value" type="checkbox" :color="checkedColor" size="32"></uni-icons>
+	  <uni-icons v-else type="circle" size="32"></uni-icons>
     </view>
     <span class="checkbox-label">
       <slot></slot>
@@ -35,8 +35,6 @@ export default {
 .checkbox-box {
   width: 20px; /* You can adjust the width as needed */
   height: 20px;
-  border: 1px solid #000;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;

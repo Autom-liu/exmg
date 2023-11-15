@@ -3,10 +3,10 @@
     <div class="list-wrapper">
       <div class="list-title">答题列表</div>
       <div class="list-inner">
-        <div v-for="item in examList" :key="item.id" class="list-table" @click="toDetail(item)">
+        <div v-for="item in examList" :key="item.id" class="list-table" @click="() => toDetail(item)">
           <div class="list-info">
-            <div class="title">{{item.examName}}</div>
-            <div class="time">{{ item.examRemark }}</div>
+            <div class="title">{{item.examInfo.examName}}</div>
+            <div class="time">{{ item.record.timeRemark }}</div>
           </div>
         </div>
       </div>
@@ -17,6 +17,7 @@
 
 <script>
 import http from '@/utils/request'
+import commonTool from '@/utils/index'
 
 export default {
   components: {
@@ -31,25 +32,31 @@ export default {
 
   },
   methods: {
-    fetchExamList () {
+    fetchExamList (query) {
       const userInfo = http.getUserInfo()
-      const params = { userId: userInfo.userId }
-      http.post('/exam/user', params).then((response) => {
-        if (response.code === '0000') {
-          this.examList = response.data
-        }
-      })
+      const params = { userId: userInfo.userId, ...query }
+	  http.post('/question/user/answer/record', params).then((response) => {
+		if (response.code === '0000') {
+			const originData = response.data;
+			for( const item of originData) {
+				item.record.timeRemark = commonTool.formatTime(new Date(item.record.endTime))
+			}
+			this.examList = originData
+		}
+	  })
     },
     toDetail (item) {
-      const id = item.id
       const { userId } = http.getUserInfo()
+	  console.log(item)
+	  const query = {examId: item.examInfo.id, recordId: item.record.id, userId}
 	  uni.navigateTo({
-	  	url:`/pages/userAnswerDetail/main?id=${id}&userId=${userId}`
+	  	url:`/pages/endExam/main?query=${JSON.stringify(query)}`
 	  })
     }
   },
-  mounted () {
-    this.fetchExamList()
+  onLoad (option) {
+	const query = JSON.parse(option.query)
+    this.fetchExamList(query)
   }
 }
 </script>

@@ -137,6 +137,7 @@ create table if not exists `question_info` (
     `difficulty` int comment '难度',
     `top_category` int comment '顶级分类id',
     `category_id` int comment '分类id',
+    `image_height` int comment '图片高度',
     `interpretation` varchar(1024) comment '答案解析',
     `pics_url` varchar(2048) comment '图片地址',
     `common` tinyint(1) comment '是否贡献为公共题目',

@@ -11,8 +11,8 @@
       <span class="exam-type">[{{currentType}}]</span>
       <span class="question">{{currentQuestion.question}}</span>
     </div>
-    <view v-if="currentPics">
-      <image :src="currentPics" class="uni-header-image"  />
+    <view v-if="currentQuestion.picsUrl">
+      <image :src="currentQuestion.picsUrl" mode="widthFix"  />
     </view>
     <div v-if="!mode" class="option-wapper">
 		<div class="option-item" v-for="(option, index) in options" :key="option.id">
@@ -84,7 +84,7 @@
 import http from '@/utils/request'
 import tool from '@/utils/index'
 import selfCheckbox from '@/pages/components/self/selfCheckbox.vue'
-import selfProgress from '@/pages/components/self/SelfProgress.vue'
+import selfProgress from '@/pages/components/self/selfProgress.vue'
 
 export default {
   components: {
@@ -126,7 +126,6 @@ export default {
     }
   },
   computed: {
-	  
     pivotText () {
       return `${this.currentIndex + 1}/${this.questionData.length}`
     },
@@ -137,7 +136,7 @@ export default {
       if (this.questionData.length > this.currentIndex) {
         return this.questionData[this.currentIndex]
       } else {
-        return ''
+        return {}
       }
     },
 	mergeInterpretation() {

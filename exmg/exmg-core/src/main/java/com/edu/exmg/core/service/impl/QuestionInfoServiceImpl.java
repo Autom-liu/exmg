@@ -330,7 +330,8 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 
 		super.handlePageOrder(query, true, example);
 
-		example.createCriteria().andUserIdEqualTo(query.getUserId())
+		example.createCriteria().andIdEqualTo(query.getId())
+				.andUserIdEqualTo(query.getUserId())
 				.andQuestionPreffixLike(query.getQuestion())
 				.andQuestionTypeEqualTo(query.getQuestionType())
 				.andTopCategoryEqualTo(query.getTopCategory())
