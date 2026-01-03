@@ -1,12 +1,12 @@
 datasource:
-  ip: ENC(2/MD6ZkNjbJ/w+3YvSm14s92VnbhAIUjltrXJuRmPUs=)
+  ip: 192.168.1.32:3306/webadmin
  
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://${datasource.ip}?characterEncoding=utf-8&useSSL=false
     username: webadmin
-    password: ENC(m5nr6undT7+VPGpuqNBckaW63XveHG9v)
+    password: 123456
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       minimum-idle: 5                           # 池中维护的最小空闲连接数

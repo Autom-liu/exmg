@@ -1,5 +1,5 @@
 
-const BASE_URL = 'https://wxapi.apricity.fun/api/exmg'
+const BASE_URL = 'http://127.0.0.1:9082/api/exmg'
 const USER_KEY = 'CURRENT_USER'
 
 export default {
