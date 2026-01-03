@@ -1,54 +1,54 @@
 <template>
-  <div class="page-container">
-    <div class="exam-question">
-      <span class="question">{{currentQuestion.question}}</span>
-    </div>
+  <view class="page-container">
+    <view class="exam-question">
+      <text class="question">{{currentQuestion.question}}</text>
+    </view>
 	<view v-if="currentQuestion.picsUrl">
 	  <image :src="currentQuestion.picsUrl" mode="widthFix"  />
 	</view>
-    <div class="option-wapper">
-      <div class="option-box">
-        <div :class="'option-item ' + iconNames[option.right << 1 | option.status]" v-for="option in options" :key="option.id">
+    <view class="option-wapper">
+      <view class="option-box">
+        <view :class="'option-item ' + iconNames[option.right << 1 | option.status]" v-for="option in options" :key="option.id">
           <van-icon :name="iconNames[option.right << 1 | option.status]" />
           {{option.option}}
-        </div>
-      </div>
-    </div>
-    <div class="cloumn-container">
-      <div class="column-box">
-        <div class="column-title">答案</div>
-        <div class="column-body">
-          <div class="content-left">正确答案：{{rightAnswerTxt}}</div>
-          <div class="content-right">你的答案：{{yourAnswerTxt}}</div>
-        </div>
-      </div>
-      <div class="column-box">
-        <div class="column-title">解析</div>
-        <div class="column-body">
-          <div class="content-left">{{currentQuestion.interpretation}}</div>
-        </div>
-      </div>
-      <div class="column-box">
-        <div class="column-title">知识点</div>
-        <div class="column-body">
-          <div class="content-left">暂无未知</div>
-        </div>
-      </div>
-      <div class="column-box center">
+        </view>
+      </view>
+    </view>
+    <view class="cloumn-container">
+      <view class="column-box">
+        <view class="column-title">答案</view>
+        <view class="column-body">
+          <view class="content-left">正确答案：{{rightAnswerTxt}}</view>
+          <view class="content-right">你的答案：{{yourAnswerTxt}}</view>
+        </view>
+      </view>
+      <view class="column-box">
+        <view class="column-title">解析</view>
+        <view class="column-body">
+          <text class="content-left">{{mergeInterpretation}}</text>
+        </view>
+      </view>
+      <view class="column-box">
+        <view class="column-title">知识点</view>
+        <view class="column-body">
+          <view class="content-left">暂无未知</view>
+        </view>
+      </view>
+      <view class="column-box center">
         题目有问题？联系反馈
-      </div>
-    </div>
-    <div class="exam-bottom">
+      </view>
+    </view>
+    <view class="exam-bottom">
       <button type="primary" size="mini" @click="backIndex">回首页</button>
       <button type="primary" size="mini" @click="prev">上一题</button>
       <button type="primary" size="mini" @click="next">下一题</button>
-    </div>
+    </view>
     <view>
     	<uni-popup ref="message" type="message">
     		<uni-popup-message type="warn" :message="messageText" :duration="2000"></uni-popup-message>
     	</uni-popup>
     </view>
-  </div>
+  </view>
 
 </template>
 
@@ -105,7 +105,23 @@ export default {
       }
       const retArr = ops.filter(t => t.status === t.right).map(p => p.label)
       return retArr.join(',')
-    }
+    },
+	mergeInterpretation() {
+		if (this.currentQuestion) {
+			const questionInterpretation = this.currentQuestion.interpretation
+			let result = [questionInterpretation]
+			const labels = ['A选项', 'B选项', 'C选项', 'D选项', 'E选项', 'F选项', 'G选项']
+			for (let i=0; i<this.options.length; i++) {
+				if (this.options[i].interpretation) {
+					result = result.concat([labels[i] + this.options[i].interpretation])
+				}
+				
+			}
+			return result.join('\n')
+		} else {
+			return ''
+		}
+	},
   },
   methods: {
     prev () {

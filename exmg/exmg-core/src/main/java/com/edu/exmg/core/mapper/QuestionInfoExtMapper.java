@@ -95,4 +95,12 @@ public interface QuestionInfoExtMapper {
      * @return
      */
     int countExamQuestion(Integer examId);
+
+    /**
+     * 只展示错题
+     * @param query
+     * @return
+     */
+    List<Integer> filterRightResult(ExamQuestionQuery query);
+
 }

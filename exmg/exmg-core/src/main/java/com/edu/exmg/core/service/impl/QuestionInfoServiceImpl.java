@@ -100,11 +100,9 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 
 		List<OptionInfoDTO> options = dto.getOptions();
 		for (OptionInfoDTO option : options) {
-			option.setId(null);
 			option.setQuestionId(questionId);
 			OptionInfo optionInfo = ConverterUtils.copyBean(option, OptionInfo.class);
 			optionInfoMapper.insertSelective(optionInfo);
-			option.setId(optionInfo.getId());
 		}
 		return Result.success(questionInfo);
 	}
@@ -263,7 +261,12 @@ public class QuestionInfoServiceImpl extends CommonService<QuestionInfo, Questio
 	 * @return
 	 */
 	private List<Integer> queryQuestionIds(ExamQuestionQuery query) {
-		List<Integer> questionIds = questionInfoExtMapper.examQuestionIds(query.getExamId());
+		List<Integer> questionIds = null;
+		if (query.isFilterRight()) {
+			questionIds = questionInfoExtMapper.filterRightResult(query);
+		} else {
+			questionIds = questionInfoExtMapper.examQuestionIds(query.getExamId());
+		}
 		return questionIds;
 	}
 

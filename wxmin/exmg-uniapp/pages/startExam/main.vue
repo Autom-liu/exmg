@@ -27,9 +27,11 @@
     </div>
     <uni-popup ref="answerSheet" type="bottom" :show="answerSheet.show" title="答题卡" cancel-text="取消" @cancel="answerSheet.onClose" @close="answerSheet.onClose">
         <div class="sheet-title">答题卡</div>
-		<div class="answer-sheet">
-          <span v-for="(item, index) in questionData" :class="answerStatus[index] ? 'index-round index-active': 'index-round'" :key="item.id" @click="(event) => answerSheet.onClick(index)">{{index + 1}}</span>
-        </div>
+		<div class="sheet-container">
+			<div class="answer-sheet">
+			  <span v-for="(item, index) in questionData" :class="answerStatus[index] ? 'index-round index-active': 'index-round'" :key="item.id" @click="(event) => answerSheet.onClick(index)">{{index + 1}}</span>
+			</div>
+		</div>
     </uni-popup>
     <view>
 		<uni-popup ref="message" type="message">
@@ -310,19 +312,24 @@ export default {
 	padding-left: 20px;
 	line-height: 40px;
 }
+.sheet-container {
+	max-height: 240px;
+	overflow: scroll;
+	margin-bottom: 60px;
+}
+
 .answer-sheet {
     display: flex;
     flex-wrap: wrap;
 	background-color: #fff;
-	margin-bottom: 60px;
 }
 .index-round {
-    width: 60px;
-    height: 60px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background-color: #c3c3c3;
-    margin: 15px;
-    line-height: 60px;
+    margin: 12px;
+    line-height: 34px;
     text-align: center;
 }
 .index-round.index-active {

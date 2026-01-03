@@ -26,6 +26,12 @@
         <view class="btn-box">
           <button size="default" type="primary" class="btn" @click="toDetail">查看答案与解析</button>
         </view>
+		<view class="btn-box">
+		  <button size="default" type="primary" class="btn" @click="toWrongDetail">只看错题</button>
+		</view>
+		<view class="btn-box">
+		  <button size="default" type="primary" open-type="share" class="btn">转发给好友</button>
+		</view>
         <view class="btn-box">
           <button size="default" type="primary" class="btn" @click="backIndex">返回首页</button>
         </view>
@@ -74,7 +80,11 @@ export default {
     toDetail () {
       // this.$router.replace({ path: '/pages/userAnswerDetail/main', query: this.resultData })
 	  uni.navigateTo({url:`/pages/userAnswerDetail/main?query=${JSON.stringify(this.query)}`})
-    }
+    },
+	toWrongDetail() {
+		const query = {...this.query, filterRight: true}
+		uni.navigateTo({url:`/pages/userAnswerDetail/main?query=${JSON.stringify(query)}`})
+	}
   },
   created () {
 
@@ -92,8 +102,11 @@ export default {
 	  this.resultData.examName = examInfo.examName
 	})
   },
-  mounted () {
-    
+  onShareAppMessage(options) {
+  	  return {
+  		  title: `我正在参加${this.resultData.examName},快来一起答题吧`,
+  		  path: '/pages/index/main'
+  	  }
   }
 }
 </script>

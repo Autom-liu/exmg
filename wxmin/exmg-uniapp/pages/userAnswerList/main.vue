@@ -55,7 +55,7 @@ export default {
     }
   },
   onLoad (option) {
-	const query = JSON.parse(option.query)
+	const query = option.query ? JSON.parse(option.query) : {}
     this.fetchExamList(query)
   }
 }

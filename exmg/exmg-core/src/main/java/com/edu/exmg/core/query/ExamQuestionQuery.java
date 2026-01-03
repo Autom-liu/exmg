@@ -29,5 +29,10 @@ public class ExamQuestionQuery extends PageQuery {
 
 	private List<Integer> questionIds;
 
+	/**
+	 * 只展示错题
+	 */
+	private boolean filterRight;
+
 
 }

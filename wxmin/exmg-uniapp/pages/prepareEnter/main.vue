@@ -10,6 +10,9 @@
         <view class="btn-item">
 			<button size="default" type="default" class="btn" @click.stop="showRemark">考试说明</button>
 		</view>
+		<view class="btn-item">
+			<button size="default" type="default" open-type="share" class="btn">转发给好友</button>
+		</view>
     </view>
     <view class="exam-remark" v-show="remarkShow">
         <view>考试名称: {{examInfo.examName}}</view>
@@ -44,7 +47,7 @@ export default {
       this.remarkShow = false
     },
     toStartExam () {
-	  uni.navigateTo({
+	  uni.redirectTo({
 		url:`/pages/startExam/main?query=${JSON.stringify(this.examInfo)}`
 	  })
     },
@@ -54,6 +57,15 @@ export default {
   },
   onLoad (route) {
 	this.examInfo = JSON.parse(route.query)
+	uni.setNavigationBarTitle({
+		title: this.examInfo.examName
+	})
+  },
+  onShareAppMessage(options) {
+	  return {
+		  title: `我正在参加${this.examInfo.examName},快来一起答题吧`,
+		  path: `/pages/prepareEnter/main?query=${JSON.stringify(this.examInfo)}`
+	  }
   }
 }
 </script>

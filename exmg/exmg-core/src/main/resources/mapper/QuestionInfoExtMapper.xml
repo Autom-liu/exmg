@@ -133,7 +133,7 @@
 
   <select id="questionUnionUserOption" resultMap="QuestionOptionsMap">
     select qi.id qid, qi.question, qi.question_type, qi.top_category, qi.category_id, qi.interpretation, qi.pics_url,
-      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right,
+      oi.id oid, oi.`option`, oi.question_id, oi.option_type, oi.`right` option_right, oi.interpretation option_interpretation,
       ua.`right` user_right,ua.`record_id`,ua.`sorted`
     from question_info qi left join option_info oi on qi.id = oi.question_id
     left join user_answer ua on oi.id = ua.option_id
@@ -194,6 +194,12 @@
 
   <select id="convergeAnswerResult" resultType="com.edu.exmg.core.vo.ConvergeAnswerVO">
     select question_id, count(option_id) rightNum, sum(`right`) totalNum from user_answer where user_id = #{userId} and exam_id = #{examId} and record_id=#{recordId} group by question_id
+  </select>
+
+  <select id="filterRightResult" resultType="int">
+    select question_id from (
+    select question_id, count(option_id) totalNum, sum(`right`) rightNum from user_answer where user_id = #{userId} and exam_id = #{examId} and record_id=#{recordId} group by question_id
+    ) B where rightNum &lt; totalNum
   </select>
 
 
